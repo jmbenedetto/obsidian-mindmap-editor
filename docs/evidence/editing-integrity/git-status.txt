@@ -1,0 +1,27 @@
+M .prettierignore
+ M README.md
+ M eslint.config.mts
+ M src/core/parse/parser.ts
+ M src/core/write/ops.ts
+ M src/main.ts
+ M src/obsidian/map/inline-edit.ts
+ M src/obsidian/map/mindmap-view.ts
+ M src/obsidian/markdown/editor-pane.ts
+ M src/obsidian/markdown/file-io.ts
+ M styles.css
+ M test/inline-edit.test.ts
+ M test/stubs/obsidian.ts
+ M test/write-ops.test.ts
+?? .agents/tmp/
+?? .pi/
+?? docs/.backup/
+?? docs/INTEGRITY.md
+?? docs/evidence/
+?? logs.md
+?? src/core/parse/source-context.ts
+?? src/obsidian/markdown/exclusive-edit.test.ts
+?? src/obsidian/markdown/exclusive-edit.ts
+?? test/integrity.test.ts
+?? test/persistence-queue.test.ts
+?? test/probes/
+?? test/structural-integrity.test.ts

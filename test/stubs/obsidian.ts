@@ -12,6 +12,10 @@ export const Keymap = {
 
 export class Component {}
 
+export class ItemView extends Component {}
+
+export const apiVersion = '1.14.5';
+
 export class Modal extends Component {}
 
 export class Setting {}

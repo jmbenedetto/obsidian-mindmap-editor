@@ -1,2 +1,6 @@
 # Files written elsewhere keep the endings they came with.
 dev-vault/Crlf.md -text
+
+# Archived console output must keep the bytes covered by its evidence checksums.
+docs/evidence/editing-integrity/*.log -whitespace
+docs/evidence/editing-integrity/*.tap -whitespace

@@ -1,4 +1,5 @@
-import { FENCE_RE, HEADING_RE, LIST_RE } from './patterns';
+import { HEADING_RE, LIST_RE } from './patterns';
+import { sourceContext } from './source-context';
 import { TaskMetadata, parseTaskMetadata } from '../task-metadata';
 
 export type NodeType = 'root' | 'heading' | 'list';
@@ -67,7 +68,7 @@ export function parseMarkdown(text: string, rootText: string): MindNode {
   };
   const headingStack: MindNode[] = [root];
   let listStack: { width: number; node: MindNode }[] = [];
-  let inFence = false;
+  const context = sourceContext(lines);
   let start = 0;
 
   if (lines[0] === '---') {
@@ -81,11 +82,7 @@ export function parseMarkdown(text: string, rootText: string): MindNode {
   for (let i = start; i < lines.length; i++) {
     const line = lines[i] ?? '';
 
-    if (FENCE_RE.test(line)) {
-      inFence = !inFence;
-      continue;
-    }
-    if (inFence) {
+    if (!context.visible[i]) {
       continue;
     }
 

@@ -1,0 +1,62 @@
+HOST_ERROR Mindmap: failed to update the file Error: Undo refused: the current file no longer matches this exact Undo record.
+    at eval (plugin:mindmap-editor:26:2241)
+    at e.<anonymous> (app://obsidian.md/app.js:1:552566)
+    at app://obsidian.md/app.js:1:254188
+    at Object.next (app://obsidian.md/app.js:1:254293)
+    at a (app://obsidian.md/app.js:1:253011)
+HOST_ERROR Mindmap: failed to update the file Error: The source baseline or map owner changed. The operation was refused.
+    at eval (plugin:mindmap-editor:26:1171)
+    at e.<anonymous> (app://obsidian.md/app.js:1:552566)
+    at app://obsidian.md/app.js:1:254188
+    at Object.next (app://obsidian.md/app.js:1:254293)
+    at a (app://obsidian.md/app.js:1:253011)
+IDENTITY {"vault":"/Users/jmb/code/obsidian-mindmap-editor/.agents/tmp/01a197ae-ed4e-70f7-b7ce-81049f628a1e/authority-lab/vault","home":"/Users/jmb/code/obsidian-mindmap-editor/.agents/tmp/01a197ae-ed4e-70f7-b7ce-81049f628a1e/authority-lab/home"}
+{
+  "kind": "final built plugin and actual disk through host APIs; no physical input; delay is supplementary, not ownership acknowledgement",
+  "results": [
+    {
+      "name": "Gate-Verified-Nonempty.md",
+      "before": {
+        "saving": false,
+        "saveAgain": false,
+        "dirty": true,
+        "lastSavedData": "# Original\n",
+        "buffer": "# Pending português 👩🏽‍💻 é\n",
+        "rendered": "# Original\n",
+        "sourceWorking": false
+      },
+      "transferred": "# Pending português 👩🏽‍💻 é\n",
+      "inert": {
+        "type": "mindmap-editor-inert-source",
+        "mutableElements": 0
+      },
+      "revoked": true,
+      "after": "# Map commit\n",
+      "reopened": 0,
+      "supplementaryObservationMs": 2500,
+      "pass": true
+    },
+    {
+      "name": "Gate-Verified-Empty.md",
+      "before": {
+        "saving": false,
+        "saveAgain": false,
+        "dirty": true,
+        "lastSavedData": "# Original\n",
+        "buffer": "",
+        "rendered": "# Original\n",
+        "sourceWorking": false
+      },
+      "transferred": "",
+      "inert": {
+        "type": "mindmap-editor-inert-source",
+        "mutableElements": 0
+      },
+      "revoked": true,
+      "after": "# Map commit\n",
+      "reopened": 0,
+      "supplementaryObservationMs": 2500,
+      "pass": true
+    }
+  ]
+}

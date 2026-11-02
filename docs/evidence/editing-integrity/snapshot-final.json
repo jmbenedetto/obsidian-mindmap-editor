@@ -1,0 +1,112 @@
+{
+  "purpose": "Agent fixture teardown snapshot, not a plugin recovery journal",
+  "recovery": [
+    {
+      "path": "Flow-Final2-Headings.md",
+      "target": "Markdown handover",
+      "text": "---\nlab: true\n---\n# Root\nroot body\n## Branch\nbranch body\n```md\n# literal, not a heading\n```\n### Child\nchild body\n## Target\ntarget body\n",
+      "revision": 1,
+      "applied": 1
+    },
+    {
+      "path": "Flow-Final2-Headings.md",
+      "target": "Line 6",
+      "text": "",
+      "revision": 1,
+      "applied": 1
+    },
+    {
+      "path": "Flow-Final3-Headings.md",
+      "target": "Markdown handover",
+      "text": "---\nlab: true\n---\n# Root\nroot body\n## Branch\nbranch body\n```md\n# literal, not a heading\n```\n### Child\nchild body\n## Target\ntarget body\n",
+      "revision": 1,
+      "applied": 1
+    },
+    {
+      "path": "Flow-Final4-Headings.md",
+      "target": "Markdown handover",
+      "text": "---\nlab: true\n---\n# Root\nroot body\n## Branch\nbranch body\n```md\n# literal, not a heading\n```\n### Child\nchild body\n## Target\ntarget body\n",
+      "revision": 1,
+      "applied": 1
+    },
+    {
+      "path": "Flow-Final4-Headings.md",
+      "target": "Line 6",
+      "text": "Branch",
+      "revision": 2,
+      "applied": 2
+    },
+    {
+      "path": "Flow-Final4-Lists.md",
+      "target": "Markdown handover",
+      "text": "# Lists\n- Alpha\n  alpha body\n  - A1\n- Beta\n  beta body\n- Gamma\n",
+      "revision": 1,
+      "applied": 1
+    },
+    {
+      "path": "Flow-Final4-Lists.md",
+      "target": "Markdown handover",
+      "text": "# Lists\n- Beta\n  beta body\n  - Alpha\n    alpha body\n    - A1\n  - Gamma\n<!-- EXTERNAL marker — preserve me -->\n",
+      "revision": 1,
+      "applied": 1
+    },
+    {
+      "path": "Flow-Final4-Lists.md",
+      "target": "Line 4",
+      "text": "unacknowledged 👩🏽‍💻 é\nraw extra",
+      "revision": 1,
+      "applied": 0,
+      "error": "The source write was refused. This exact draft has not been acknowledged."
+    },
+    {
+      "path": "Gate-Verified-Nonempty.md",
+      "target": "Markdown handover",
+      "text": "# Pending português 👩🏽‍💻 é\n",
+      "revision": 1,
+      "applied": 1
+    },
+    {
+      "path": "Gate-Verified-Empty.md",
+      "target": "Markdown handover",
+      "text": "",
+      "revision": 1,
+      "applied": 1
+    },
+    {
+      "path": "MapOnly-Verified.md",
+      "target": "Markdown handover",
+      "text": "# Initial\n",
+      "revision": 1,
+      "applied": 1
+    },
+    {
+      "path": "MapOnly-Verified.md",
+      "target": "Line 1",
+      "text": "Map-only 👩🏽‍💻",
+      "revision": 1,
+      "applied": 1
+    },
+    {
+      "path": "MapOnly-Verified.md",
+      "target": "Line 1",
+      "text": "Map-only verified 👩🏽‍💻",
+      "revision": 1,
+      "applied": 1
+    }
+  ],
+  "maps": [
+    {
+      "path": "MapOnly-Verified.md",
+      "draft": {
+        "path": "MapOnly-Verified.md",
+        "target": "Line 1",
+        "text": "Map-only verified 👩🏽‍💻",
+        "revision": 1,
+        "applied": 1
+      },
+      "input": null,
+      "disk": "# Map-only verified 👩🏽‍💻\n"
+    }
+  ],
+  "sources": []
+}

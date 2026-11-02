@@ -1,5 +1,8 @@
 node_modules
 dist
+.agents/tmp
+.pi
+.tmp
 main.js
 package-lock.json
 docs

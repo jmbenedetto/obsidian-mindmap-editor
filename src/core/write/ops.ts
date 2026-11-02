@@ -1,4 +1,10 @@
-import { lineMatchesNode, MindNode } from '../parse/parser';
+import {
+  findByLine,
+  lineMatchesNode,
+  MindNode,
+  parseMarkdown,
+} from '../parse/parser';
+import { requireStructuralContext } from '../parse/source-context';
 import {
   CHECKBOX_RE,
   HEADING_SHIFT_RE,
@@ -329,8 +335,32 @@ export function reorderSiblingOp(
   nodeA: MindNode,
   nodeB: MindNode,
 ): string[] {
+  const context = requireStructuralContext(lines);
+  const fresh = parseMarkdown(lines.join('\n'), '');
+
+  if (
+    nodeA.type !== nodeB.type ||
+    nodeA.parent?.line !== nodeB.parent?.line ||
+    (nodeA.type === 'list' && context.fences)
+  ) {
+    throw new Error('Mindmap: unsupported sibling reorder context.');
+  }
+  for (const node of [nodeA, nodeB]) {
+    if (
+      findByLine(fresh, node.line)?.endLine !== node.endLine ||
+      (node.type === 'heading' && !context.headings.has(node.line))
+    ) {
+      throw new Error('Mindmap: invalid sibling source range.');
+    }
+  }
   requireNodeLine(lines, nodeA);
   requireNodeLine(lines, nodeB);
+  lines = lines.slice();
+  const terminated = lines[lines.length - 1] === '';
+
+  if (terminated) {
+    lines.pop();
+  }
   const [first, second] =
     nodeA.line < nodeB.line ? [nodeA, nodeB] : [nodeB, nodeA];
   const firstBlock = nodeBlock(lines, first);
@@ -344,6 +374,20 @@ export function reorderSiblingOp(
     ...gap,
     ...firstBlock,
   );
+  if (terminated) {
+    lines.push('');
+  }
+  requireStructuralContext(lines);
+  const result = parseMarkdown(lines.join('\n'), '');
+  const positions = [first.line, first.line + secondBlock.length + gap.length];
+
+  if (
+    positions.some(
+      (line) => findByLine(result, line)?.parent?.line !== first.parent?.line,
+    )
+  ) {
+    throw new Error('Mindmap: reorder would change the parent hierarchy.');
+  }
 
   return lines;
 }
@@ -394,6 +438,7 @@ function shiftHeadingSegment(
   segment: string[],
   source: MindNode,
   target: MindNode,
+  headings: Set<number>,
 ): string[] {
   const targetLevel = target.type === 'root' ? 0 : target.level;
   const delta = targetLevel + 1 - source.level;
@@ -402,15 +447,18 @@ function shiftHeadingSegment(
     return segment.slice();
   }
 
-  return segment.map((l) => {
-    const m = HEADING_SHIFT_RE.exec(l);
-
-    if (!m) {
-      return l;
+  return segment.map((line, offset) => {
+    if (!headings.has(source.line + offset)) {
+      return line;
     }
-    const level = Math.min(6, Math.max(1, (m[1] ?? '').length + delta));
+    const match = HEADING_SHIFT_RE.exec(line);
+    const level = (match?.[1]?.length ?? 0) + delta;
 
-    return '#'.repeat(level) + (m[2] ?? '');
+    if (!match || level < 1 || level > 6) {
+      throw new Error('Mindmap: heading level overflow; the move was refused.');
+    }
+
+    return '#'.repeat(level) + (match[2] ?? '');
   });
 }
 
@@ -445,8 +493,52 @@ export function moveNodesOp(
   if (!ordered.length) {
     return lines;
   }
+  const context = requireStructuralContext(lines);
+  const fresh = parseMarkdown(lines.join('\n'), '');
   const parent = ordered[0]!.parent;
   const type = ordered[0]!.type;
+
+  if (
+    type === 'root' ||
+    (type === 'heading' && target.type === 'list') ||
+    (type === 'list' && context.fences)
+  ) {
+    throw new Error(
+      'Mindmap: unsupported source/destination context for this move.',
+    );
+  }
+  for (const node of [...ordered, target, ...(before ? [before] : [])]) {
+    const found = node.type === 'root' ? fresh : findByLine(fresh, node.line);
+
+    if (
+      !found ||
+      found.type !== node.type ||
+      found.endLine !== node.endLine ||
+      found.level !== node.level ||
+      (node.type === 'heading' && !context.headings.has(node.line))
+    ) {
+      throw new Error(
+        'Mindmap: source range is stale or is not genuine structure.',
+      );
+    }
+  }
+  if (
+    ordered.some(
+      (source) =>
+        (target.line >= source.line && target.line <= source.endLine) ||
+        (before && before.line >= source.line && before.line <= source.endLine),
+    ) ||
+    (before && before.parent?.line !== target.line)
+  ) {
+    throw new Error('Mindmap: invalid or overlapping move boundaries.');
+  }
+  lines = lines.slice();
+  // The EOF terminator belongs to the document, not to its last branch.
+  const terminated = lines[lines.length - 1] === '';
+
+  if (terminated) {
+    lines.pop();
+  }
 
   if (ordered.some((node) => node.parent !== parent || node.type !== type)) {
     throw new Error('Mindmap: grouped nodes must be same-type siblings');
@@ -464,7 +556,7 @@ export function moveNodesOp(
 
     return source.type === 'list'
       ? reindentListSegment(segment, source, target, lines)
-      : shiftHeadingSegment(segment, source, target);
+      : shiftHeadingSegment(segment, source, target, context.headings);
   });
   let at: number;
 
@@ -476,15 +568,44 @@ export function moveNodesOp(
     at = listInsertPoint(target);
   }
 
+  at = Math.min(at, lines.length);
+  let targetLine = target.line;
+
   for (const source of [...ordered].reverse()) {
-    const length = source.endLine - source.line + 1;
+    const length = segments[ordered.indexOf(source)]!.length;
+
+    if (source.line < targetLine) {
+      targetLine -= length;
+    }
 
     lines.splice(source.line, length);
     if (source.line < at) {
       at -= length;
     }
   }
-  lines.splice(at, 0, ...segments.flat());
+  const inserted = segments.flat();
+
+  if (targetLine >= at) {
+    targetLine += inserted.length;
+  }
+  lines.splice(at, 0, ...inserted);
+  if (terminated) {
+    lines.push('');
+  }
+  requireStructuralContext(lines);
+  const result = parseMarkdown(lines.join('\n'), '');
+  let position = at;
+
+  for (let i = 0; i < ordered.length; i++) {
+    const moved = findByLine(result, position);
+
+    if (!moved || moved.type !== type || moved.parent?.line !== targetLine) {
+      throw new Error(
+        'Mindmap: resulting hierarchy does not match the requested parent.',
+      );
+    }
+    position += segments[i]!.length;
+  }
 
   return lines;
 }

@@ -1,0 +1,43 @@
+
+ RUN  v3.2.7 /Users/jmb/code/obsidian-mindmap-editor
+
+ ❯ test/integrity.test.ts (11 tests | 1 failed | 10 skipped) 17ms
+   × F01, actual inline writer > retains the last connected raw draft when the editing DOM is disposed 16ms
+     → expected '' to be 'exact raw draft 👩🏽\u200d💻' // Object.is equality
+   ↓ F01, actual inline writer > does not let an older failed request poison a newer successful acknowledgement
+   ↓ F01, actual inline writer > keeps a newer raw draft dirty after an older acknowledgement
+   ↓ F01, actual inline writer > retains the exact draft and original bytes after a file switch
+   ↓ F01, actual inline writer > does not replay a committed label when redraw fails
+   ↓ F01, actual inline writer > persists final intent after a pending autosave, without a reopen flush
+   ↓ F01, actual inline writer > persists A to B to A while B is pending
+   ↓ F02, actual direct-file Undo > refuses an interleaved writer inside the atomic callback and retains its record
+   ↓ F02, actual direct-file Undo > still applies uncontested Undo
+   ↓ N07, actual branch moves > preserves literal headings in ``` while changing real hierarchy
+   ↓ N07, actual branch moves > preserves literal headings in ~~~ while changing real hierarchy
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/integrity.test.ts > F01, actual inline writer > retains the last connected raw draft when the editing DOM is disposed
+AssertionError: expected '' to be 'exact raw draft 👩🏽\u200d💻' // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- exact raw draft 👩🏽‍💻[39m
+
+ ❯ test/integrity.test.ts:126:24
+    124|     const draft = Reflect.get(f.view, 'activeDraft') as { text: string…
+    125| 
+    126|     expect(draft.text).toBe('exact raw draft 👩🏽‍💻');
+       |                        ^
+    127|     expect(draft.error).toContain('interrupted');
+    128|     expect(f.disk()).toBe('# Draft\n');
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 10 skipped (11)
+   Start at  14:41:06
+   Duration  1.45s (transform 230ms, setup 0ms, collect 274ms, tests 17ms, environment 491ms, prepare 86ms)
+

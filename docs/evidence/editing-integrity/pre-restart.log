@@ -1,0 +1,9 @@
+IDENTITY {"vault":"/Users/jmb/code/obsidian-mindmap-editor/.agents/tmp/01a197ae-ed4e-70f7-b7ce-81049f628a1e/authority-lab/vault","home":"/Users/jmb/code/obsidian-mindmap-editor/.agents/tmp/01a197ae-ed4e-70f7-b7ce-81049f628a1e/authority-lab/home"}
+file:///Users/jmb/code/obsidian-mindmap-editor/.agents/tmp/01a197ae-ed4e-70f7-b7ce-81049f628a1e/lab-eval.mjs:24
+  if (result.result?.exceptionDetails || result.error) throw new Error(JSON.stringify(result.result?.exceptionDetails ?? result.error));
+                                                             ^
+
+Error: {"exceptionId":7,"text":"Uncaught (in promise) Error: Unacknowledged fixture input exists; do not restart","lineNumber":6,"columnNumber":67,"scriptId":"185","stackTrace":{"callFrames":[{"functionName":"","scriptId":"185","url":"","lineNumber":5,"columnNumber":66}]},"exception":{"type":"object","subtype":"error","className":"Error","description":"Error: Unacknowledged fixture input exists; do not restart\n    at <anonymous>:6:67","objectId":"3785058194657993438.1.1"}}
+    at file:///Users/jmb/code/obsidian-mindmap-editor/.agents/tmp/01a197ae-ed4e-70f7-b7ce-81049f628a1e/lab-eval.mjs:24:62
+
+Node.js v26.12.1

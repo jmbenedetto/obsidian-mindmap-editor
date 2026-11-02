@@ -1,0 +1,28 @@
+IDENTITY {"vault":"/Users/jmb/code/obsidian-mindmap-editor/.agents/tmp/01a197ae-ed4e-70f7-b7ce-81049f628a1e/authority-lab/vault","home":"/Users/jmb/code/obsidian-mindmap-editor/.agents/tmp/01a197ae-ed4e-70f7-b7ce-81049f628a1e/authority-lab/home"}
+{
+  "kind": "actual host API and synthetic DOM events, with a controlled per-view pending queue; not physical input",
+  "results": [
+    {
+      "case": "F01",
+      "pass": true,
+      "controlled": "only the participating per-view queue was held; real host disk I/O",
+      "revision": 2,
+      "applied": 2,
+      "after": "---\nlab: true\n---\n# Root\nroot body\n## Branch\nbranch body\n```md\n# literal, not a heading\n```\n### Child\nchild body\n## Target\ntarget body\n"
+    },
+    {
+      "case": "heading reorder, reparent, literal fence and Undo",
+      "pass": true,
+      "reordered": "---\nlab: true\n---\n# Root\nroot body\n## Target\ntarget body\n## Branch\nbranch body\n```md\n# literal, not a heading\n```\n### Child\nchild body\n",
+      "moved": "---\nlab: true\n---\n# Root\nroot body\n## Target\ntarget body\n### Branch\nbranch body\n```md\n# literal, not a heading\n```\n#### Child\nchild body\n"
+    },
+    {
+      "case": "list reorder, reparent, multi-node move and Undo",
+      "pass": true,
+      "reordered": "# Lists\n- Beta\n  beta body\n- Alpha\n  alpha body\n  - A1\n- Gamma\n",
+      "moved": "# Lists\n- Beta\n  beta body\n  - Alpha\n    alpha body\n    - A1\n- Gamma\n",
+      "multi": "# Lists\n- Beta\n  beta body\n  - Alpha\n    alpha body\n    - A1\n  - Gamma\n"
+    }
+  ],
+  "delayedSourceChecks": true
+}

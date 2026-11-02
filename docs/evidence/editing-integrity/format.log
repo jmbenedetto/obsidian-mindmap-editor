@@ -1,0 +1,6 @@
+
+> mindmap-editor@1.9.0 format:check
+> prettier --check .
+
+Checking formatting...
+All matched files use Prettier code style!

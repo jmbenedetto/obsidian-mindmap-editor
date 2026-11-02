@@ -1,0 +1,133 @@
+{
+  "purpose": "Agent fixture teardown snapshot, not a plugin recovery journal",
+  "recovery": [
+    {
+      "path": "Gate3-Nonempty.md",
+      "target": "Markdown handover",
+      "text": "# Pending português 👩🏽‍💻 é\n",
+      "revision": 1,
+      "applied": 1
+    },
+    {
+      "path": "Gate4-Nonempty.md",
+      "target": "Markdown handover",
+      "text": "# Pending português 👩🏽‍💻 é\n",
+      "revision": 1,
+      "applied": 1
+    },
+    {
+      "path": "Gate4-Empty.md",
+      "target": "Markdown handover",
+      "text": "",
+      "revision": 1,
+      "applied": 1
+    },
+    {
+      "path": "Gate-Final-Nonempty.md",
+      "target": "Markdown handover",
+      "text": "# Pending português 👩🏽‍💻 é\n",
+      "revision": 1,
+      "applied": 1
+    },
+    {
+      "path": "Gate-Final-Empty.md",
+      "target": "Markdown handover",
+      "text": "",
+      "revision": 1,
+      "applied": 1
+    },
+    {
+      "path": "Flow-Final-Headings.md",
+      "target": "Markdown handover",
+      "text": "---\nlab: true\n---\n# Root\nroot body\n## Branch\nbranch body\n```md\n# literal, not a heading\n```\n### Child\nchild body\n## Target\ntarget body\n",
+      "revision": 1,
+      "applied": 1
+    },
+    {
+      "path": "Flow-Final-Headings.md",
+      "target": "Line 6",
+      "text": "",
+      "revision": 1,
+      "applied": 0
+    }
+  ],
+  "maps": [
+    {
+      "path": "Flow-Final-Headings.md",
+      "draft": {
+        "path": "Flow-Final-Headings.md",
+        "target": "Line 6",
+        "text": "",
+        "revision": 1,
+        "applied": 0
+      },
+      "input": {
+        "innerText": "Branch",
+        "textContent": "Branch"
+      },
+      "disk": "---\nlab: true\n---\n# Root\nroot body\n## Branch\nbranch body\n```md\n# literal, not a heading\n```\n### Child\nchild body\n## Target\ntarget body\n"
+    }
+  ],
+  "sources": [
+    {
+      "state": {
+        "type": "markdown",
+        "state": {
+          "file": "Synthetic.md",
+          "mode": "source",
+          "source": true,
+          "backlinks": false
+        },
+        "icon": "lucide-file",
+        "title": "Synthetic"
+      },
+      "buffer": "MAP-COMMIT\n",
+      "disk": "MAP-COMMIT\n"
+    },
+    {
+      "state": {
+        "type": "markdown",
+        "state": {
+          "file": "Gate-Nonempty.md",
+          "mode": "source",
+          "source": true,
+          "backlinks": false
+        },
+        "icon": "lucide-file",
+        "title": "Gate-Nonempty"
+      },
+      "buffer": "# Pending português 👩🏽‍💻 é\n",
+      "disk": "# Pending português 👩🏽‍💻 é\n"
+    },
+    {
+      "state": {
+        "type": "markdown",
+        "state": {
+          "file": "Gate2-Nonempty.md",
+          "mode": "source",
+          "source": true,
+          "backlinks": false
+        },
+        "icon": "lucide-file",
+        "title": "Gate2-Nonempty"
+      },
+      "buffer": "# Pending português 👩🏽‍💻 é\n",
+      "disk": "# Pending português 👩🏽‍💻 é\n"
+    },
+    {
+      "state": {
+        "type": "markdown",
+        "state": {
+          "file": "Untitled.md",
+          "mode": "source",
+          "source": true,
+          "backlinks": false
+        },
+        "icon": "lucide-file",
+        "title": "Untitled"
+      },
+      "buffer": "",
+      "disk": ""
+    }
+  ]
+}

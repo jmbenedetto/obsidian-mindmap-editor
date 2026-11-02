@@ -1,0 +1,9 @@
+IDENTITY {"vault":"/Users/jmb/code/obsidian-mindmap-editor/.agents/tmp/01a197ae-ed4e-70f7-b7ce-81049f628a1e/authority-lab/vault","home":"/Users/jmb/code/obsidian-mindmap-editor/.agents/tmp/01a197ae-ed4e-70f7-b7ce-81049f628a1e/authority-lab/home"}
+file:///Users/jmb/code/obsidian-mindmap-editor/.agents/tmp/01a197ae-ed4e-70f7-b7ce-81049f628a1e/lab-eval.mjs:24
+  if (result.result?.exceptionDetails || result.error) throw new Error(JSON.stringify(result.result?.exceptionDetails ?? result.error));
+                                                             ^
+
+Error: {"exceptionId":6,"text":"Uncaught (in promise) Error: Inline editor was not opened","lineNumber":3,"columnNumber":41,"scriptId":"182","stackTrace":{"callFrames":[{"functionName":"check","scriptId":"182","url":"","lineNumber":2,"columnNumber":40},{"functionName":"","scriptId":"182","url":"","lineNumber":43,"columnNumber":0}]},"exception":{"type":"object","subtype":"error","className":"Error","description":"Error: Inline editor was not opened\n    at check (<anonymous>:3:41)\n    at <anonymous>:44:1","objectId":"3785058194657993438.1.1"}}
+    at file:///Users/jmb/code/obsidian-mindmap-editor/.agents/tmp/01a197ae-ed4e-70f7-b7ce-81049f628a1e/lab-eval.mjs:24:62
+
+Node.js v26.12.1

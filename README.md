@@ -5,23 +5,29 @@
 Edit your outline as a mind map, synced to Markdown.
 No new file format, no markup to add.
 
+**Experimental development branch:** map writes require exclusive desktop editing on Obsidian 1.14.5.
+Acquire from one raw Source pane; the plugin replaces it with an inert text preview.
+See [the integrity contract, supported modes and validation limits](docs/INTEGRITY.md) before using it.
+
 ![Demo: reordering and reparenting nodes by drag & drop, checking off a task, and renaming a node - all saved back to the Markdown file live](docs/demo.gif)
 
 ## Usage
 
-1. Open a Markdown file.
-2. Press Ctrl+P (Cmd+P on macOS) and run `Open mind map for the active file` (or click the ribbon icon).
-   Any note's map also opens from `Open mind map linked to this note` on its right-click menu, in the file
-   explorer or on its tab.
-3. The map opens beside the note on desktop, or in another tab on mobile.
+1. Open the note in one raw **Source** pane, not Live Preview or Reading view.
+2. Run `Open mind map for the active file` from the command palette or ribbon.
+3. Use **Acquire exclusive map editing** in the map header. A running save is refused; retry after it finishes.
+4. Edit labels or move branches. Close the inert preview for map-only use; use **Release map editing** before returning to Markdown.
+
+Viewing is available without authority. Mobile editing, popouts, multiple same-file maps, interactive
+Reading views, and concurrent Markdown editors are not supported by this branch.
 
 ## Features
 
 - **Markdown-native maps** - Headings and lists form the map; edits write back to the same note.
-- **Direct editing** - Add, rename, delete, multi-select, and drag nodes with undo/redo support.
-- **Tasks and folds** - Add task notes, track and sync subtasks, collapse branches, and optionally hide completed tasks.
+- **Direct editing** - Add, rename, delete, multi-select, and drag nodes. Exclusive editing has one-step Undo, not Redo.
+- **Tasks and folds** - Edit task labels and metadata, track subtasks, collapse branches, and hide completed tasks. Add body notes in Markdown after release.
 - **Rich node text** - Show body text with inline Markdown, links, and image previews.
-- **Map/editor sync** - Selection, cursor position, folds, and wikilinks stay in sync.
+- **Map/editor sync** - Outside exclusive editing, follow the editor's cursor and folds. Exclusive selection never opens a Markdown writer.
 - **Flexible views** - Zoom, pan, fit, and reopen each map at its saved position.
 - **Link and Auto-open** - Link a map to a Markdown tab, or reopen it automatically with a note.
 - **Node bookmarks** - Save important nodes and jump back from the map header. The plugin follows identifiable edits made in Obsidian even while the map is closed.
@@ -32,21 +38,21 @@ No new file format, no markup to add.
 
 Active while the mind map pane is focused.
 
-| Key                     | Action                                                                                                                 |
-| ----------------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| `↑` / `↓`               | Select previous / next sibling, or walk the node's text line by line                                                   |
-| `←` / `→`               | Select parent / first child                                                                                            |
-| `Ctrl/Cmd + ←/→`        | Collapse / expand the selected branch (also in the right-click menu)                                                   |
-| `Shift + ↑/↓`           | Move the node among its siblings                                                                                       |
-| `Enter`                 | Add a sibling (a child on the root)                                                                                    |
-| `Tab`                   | Add a child                                                                                                            |
-| `F2`                    | Rename the node                                                                                                        |
-| `Shift + F2`            | Add or edit the node's note                                                                                            |
-| `Space`                 | Toggle the selected task's checkbox                                                                                    |
-| `Ctrl/Cmd + B`          | Add or remove a bookmark for the selected node                                                                         |
-| `Delete` / `Backspace`  | Delete the selected node(s) and their subtrees                                                                         |
-| `Ctrl/Cmd + Z` / `+ ⇧Z` | Undo / redo, through the Markdown pane's history - or one step of the map's own when the note is only open for reading |
-| `Esc`                   | End an edit, then clear the body-line and node selections                                                              |
+| Key                    | Action                                                                             |
+| ---------------------- | ---------------------------------------------------------------------------------- |
+| `↑` / `↓`              | Select previous / next sibling, or walk the node's text line by line               |
+| `←` / `→`              | Select parent / first child                                                        |
+| `Ctrl/Cmd + ←/→`       | Collapse / expand the selected branch (also in the right-click menu)               |
+| `Shift + ↑/↓`          | Move the node among its siblings                                                   |
+| `Enter`                | Add a sibling (a child on the root)                                                |
+| `Tab`                  | Add a child                                                                        |
+| `F2`                   | Rename the node                                                                    |
+| `Shift + F2`           | Body notes require Markdown editing after release                                  |
+| `Space`                | Toggle the selected task's checkbox                                                |
+| `Ctrl/Cmd + B`         | Add or remove a bookmark for the selected node                                     |
+| `Delete` / `Backspace` | Delete the selected node(s) and their subtrees                                     |
+| `Ctrl/Cmd + Z`         | One-step map Undo, with an atomic source comparison; no map Redo in exclusive mode |
+| `Esc`                  | End an edit, then clear the body-line and node selections                          |
 
 Back/forward use Obsidian's own Navigate back / forward command:
 `Ctrl + Alt + ←/→` (`Cmd + Option + ←/→` on macOS).
@@ -66,6 +72,7 @@ None of these come with a hotkey; bind the ones you want in Settings → Hotkeys
 | `Fold all node text` / `Unfold all node text`       | The `≡` header button, likewise                       |
 | `Show or hide node text on the map`                 | The `¶` header button                                 |
 | `Refresh the mind map from the Markdown`            | The `⟳` header button: rebuilds the map from its file |
+| `Recover map drafts`                                | Copy unacknowledged drafts before exiting Obsidian    |
 
 ## Settings
 

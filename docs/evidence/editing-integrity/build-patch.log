@@ -1,0 +1,4 @@
+
+> mindmap-editor@1.9.0 build
+> tsc -noEmit -skipLibCheck && node esbuild.config.mjs production
+

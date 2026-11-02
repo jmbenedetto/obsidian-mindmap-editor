@@ -18,7 +18,9 @@ export interface EditSession {
   /** Puts the drawn text back when the editor goes. */
   restore: () => void;
   /** Writes what is in the editor; called as it is typed, and once at the end. */
-  write: (value: string) => void;
+  write: (value: string) => void | Promise<void>;
+  capture?: (reason: 'input' | 'compositionend' | 'finish') => void;
+  interrupted?: () => void;
   setEditing: (editing: boolean) => void;
   /** Sizes the editor to what it holds, for one that does not grow by itself. */
   fit?: () => void;
@@ -31,11 +33,10 @@ export interface EditSession {
 /**
  * Runs an inline edit of a node's label. What is typed goes to the file as it
  * is typed, a moment behind the keys - the map is one side of a note, not a
- * form to submit - so there is nothing here to confirm and nothing to lose by
- * leaving. Undo is the editor's, as it is for every other way this plugin
- * writes.
+ * form to submit. Finalization joins the last requested save; failed or
+ * interrupted input is retained by the owning view's recovery record.
  */
-export function runEditor(session: EditSession): () => void {
+export function runEditor(session: EditSession): () => Promise<void> {
   const { input, placeCaret, restore, write, value } = session;
 
   session.setEditing(true);
@@ -43,6 +44,11 @@ export function runEditor(session: EditSession): () => void {
   let done = false;
   let composing = false;
   let pending: number | null = null;
+  let lastWrite: Promise<void> | null = null;
+  let finishing: Promise<void> | null = null;
+  let failed = false;
+  let interrupted = false;
+  let requestId = 0;
   const put = (): void => {
     // A render can take the editor's element with it while a write is still
     // pending: what it holds is then older than the file it would go into.
@@ -56,11 +62,30 @@ export function runEditor(session: EditSession): () => void {
     // Mid-composition an IME's own working text is in the element: a CJK
     // reading would land in the file, to be replaced when it is confirmed.
     if (!composing) {
-      write(value());
+      const request = ++requestId;
+      const result = write(value());
+
+      if (result) {
+        lastWrite = result.then(
+          () => {
+            if (request === requestId) {
+              failed = false;
+            }
+          },
+          () => {
+            if (request === requestId) {
+              failed = true;
+            }
+          },
+        );
+      } else {
+        failed = false;
+        lastWrite = null;
+      }
     }
   };
   const soon = (): void => {
-    if (done) {
+    if (done || finishing) {
       return;
     }
     if (pending !== null) {
@@ -68,19 +93,47 @@ export function runEditor(session: EditSession): () => void {
     }
     pending = input.win.setTimeout(put, SETTLE_DELAY);
   };
-  const finish = (): void => {
-    if (done) {
-      return;
+  const finish = (): Promise<void> => {
+    if (finishing) {
+      return finishing;
     }
-    session.setEditing(false);
-    input.doc.removeEventListener('keydown', onKey, true);
-    // The last of what was typed goes before the flag does; nothing typed
-    // after this can reach the file.
-    put();
+    let resolve!: () => void;
+
+    finishing = new Promise<void>((done) => {
+      resolve = done;
+    });
+    session.capture?.('finish');
+    input.contentEditable = 'false';
+    if (composing || !input.isConnected) {
+      interrupted = true;
+      session.interrupted?.();
+    } else {
+      put();
+    }
     done = true;
-    if (!session.settle()) {
-      restore();
+    if (pending !== null) {
+      input.win.clearTimeout(pending);
+      pending = null;
     }
+    input.doc.removeEventListener('keydown', onKey, true);
+    const complete = (): void => {
+      try {
+        session.setEditing(false);
+        if (!failed && !interrupted && !session.settle()) {
+          restore();
+        }
+      } finally {
+        resolve();
+      }
+    };
+
+    if (lastWrite) {
+      void lastWrite.then(complete);
+    } else {
+      complete();
+    }
+
+    return finishing;
   };
 
   // Clicks inside the editor must not reach the node handlers, which would
@@ -104,7 +157,7 @@ export function runEditor(session: EditSession): () => void {
     }
     if (ev.key === 'Escape' || ev.key === 'Enter') {
       ev.preventDefault();
-      finish();
+      void finish();
     } else if (ev.key === 'Tab') {
       // Focus is what ends an edit, and Tab moves it: the edit would close on
       // a keystroke nobody means as "done". It does nothing here instead.
@@ -113,20 +166,9 @@ export function runEditor(session: EditSession): () => void {
   };
 
   input.doc.addEventListener('keydown', onKey, true);
-  // Focus leaving for the Markdown pane, another window, anywhere outside the
-  // map: the edit stays where it is, so coming back carries on where it left
-  // off. What is typed is already in the file, so there is nothing to lose by
-  // waiting - only the map's renders, which stand down while an edit is on.
-  input.addEventListener('blur', (ev) => {
-    const to = ev.relatedTarget;
-
-    put();
-    if (to instanceof Node && input.closest('.mindmap-canvas')?.contains(to)) {
-      finish();
-
-      return;
-    }
-    session.setEditing(false);
+  // Blur joins the same finalization as Enter/Escape, including pending autosave.
+  input.addEventListener('blur', () => {
+    void finish();
   });
   input.addEventListener('focus', () => {
     if (!done) {
@@ -138,12 +180,17 @@ export function runEditor(session: EditSession): () => void {
   });
   input.addEventListener('compositionend', () => {
     composing = false;
+    session.capture?.('compositionend');
     soon();
   });
   // Growing text pushes the node's neighbours around, and renders are held off
   // while editing - so lay the map out again as it is typed, and put what was
   // typed in the file a moment later.
   input.addEventListener('input', () => {
+    session.capture?.('input');
+    if (done) {
+      return;
+    }
     session.fit?.();
     session.reflow();
     soon();
@@ -162,7 +209,7 @@ export function runEditor(session: EditSession): () => void {
     placeCaret();
     input.win.setTimeout(() => {
       if (!done && input.doc.activeElement !== input) {
-        finish();
+        void finish();
       }
     }, FOCUS_RETRY_DELAY);
   }, 0);

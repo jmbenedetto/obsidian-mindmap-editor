@@ -1,4 +1,11 @@
-import { App, Keymap, MarkdownView, TFile, WorkspaceLeaf } from 'obsidian';
+import {
+  App,
+  Keymap,
+  MarkdownView,
+  Notice,
+  TFile,
+  WorkspaceLeaf,
+} from 'obsidian';
 import { findEditingView, findMarkdownView } from './file-io';
 import { sameWindow } from '../workspace';
 import {
@@ -16,6 +23,7 @@ export interface EditorPaneDeps {
   leaf: WorkspaceLeaf;
   /** The file the map is showing, read on demand: it changes underneath. */
   file: () => TFile | null;
+  editingBlocked?: () => boolean;
   /** A new pane in the configured direction, split off `near`'s window. */
   openSplit: (near?: WorkspaceLeaf) => WorkspaceLeaf;
   /** Whether the keyboard is on the map right now. */
@@ -128,6 +136,10 @@ export class EditorPane {
    * away is one the user cannot see from here.
    */
   resolveLeaf(): WorkspaceLeaf {
+    if (this.deps.editingBlocked?.()) {
+      new Notice('Release map editing before opening a Markdown pane.');
+      throw new Error('Map owns exclusive editing authority.');
+    }
     const linked = this.linkedLeaf();
 
     if (linked) {
@@ -154,6 +166,9 @@ export class EditorPane {
    * use it: while a map is linked, only the linked tab may be written to.
    */
   async tabFor(file: TFile): Promise<WorkspaceLeaf> {
+    if (this.deps.editingBlocked?.()) {
+      throw new Error('Release map editing before linking a Markdown tab.');
+    }
     const open = this.viewFor(file);
 
     if (open) {
@@ -174,6 +189,9 @@ export class EditorPane {
    * back, and doing that for nothing is what makes the map fight the user.
    */
   async showFile(file: TFile): Promise<boolean> {
+    if (this.deps.editingBlocked?.()) {
+      return false;
+    }
     // The linked tab moves with the map even when another tab has the file,
     // so while there is one it is the only tab looked at.
     const linked = this.linkedLeaf();
@@ -215,6 +233,11 @@ export class EditorPane {
    * (see `openMindmap` in main.ts for the reverse direction).
    */
   async focus(): Promise<void> {
+    if (this.deps.editingBlocked?.()) {
+      new Notice('Release map editing before opening Markdown.');
+
+      return;
+    }
     const file = this.deps.file();
 
     if (!file) {
@@ -236,6 +259,9 @@ export class EditorPane {
    * line inside of, which is all such a pane can be pointed at.
    */
   async goToLine(line: number, block?: PreviewBlock): Promise<void> {
+    if (this.deps.editingBlocked?.()) {
+      return;
+    }
     const file = this.deps.file();
 
     if (!file || line < 0) {
@@ -331,7 +357,7 @@ export class EditorPane {
    * measured indentation just as the editor receives focus.
    */
   async editLine(line: number): Promise<MarkdownView | null> {
-    if (line < 0) {
+    if (this.deps.editingBlocked?.() || line < 0) {
       return null;
     }
     await this.focus();

@@ -1,0 +1,260 @@
+
+ RUN  v3.2.7 /Users/jmb/code/obsidian-mindmap-editor
+
+ ❯ src/obsidian/markdown/exclusive-edit.test.ts (17 tests | 5 failed) 18ms
+   × exclusive source handover > refuses a non-idle leaf before revocation 9ms
+     → promise resolved "SourceAuthority{ app: { …(3) }, …(8) }" instead of rejecting
+   × exclusive source handover > refuses a non-idle owner before revocation 1ms
+     → promise resolved "SourceAuthority{ app: { …(3) }, …(8) }" instead of rejecting
+   × exclusive source handover > preserves the original draft when a late pane transition changes its buffer context 2ms
+     → expected false to be true // Object.is equality
+   × exclusive source handover > requires an acknowledged inert view transition, not a resolved no-op 1ms
+     → promise resolved "SourceAuthority{ app: { …(3) }, …(8) }" instead of rejecting
+   × exclusive source handover > retires authority when another Markdown pane has an unresolved transition target 0ms
+     → expected [Function] to throw an error
+   ✓ exclusive source handover > makes the old source inert synchronously before asynchronous storage 0ms
+   ✓ exclusive source handover > refuses active Source composition without revoking its editor 0ms
+   ✓ exclusive source handover > retains a buffer changed after revocation and refuses successful acquisition 0ms
+   ✓ exclusive source handover > transfers an exact pending buffer "# Português 👩🏽‍💻 é\n" after synchronous revocation 0ms
+   ✓ exclusive source handover > transfers an exact pending buffer "" after synchronous revocation 0ms
+   ✓ exclusive source handover > revalidates a late second map inside the transfer callback 0ms
+   ✓ exclusive source handover > refuses an unrecognized input adapter or deferred source before revocation 0ms
+   ✓ exclusive source handover > refuses a running/follow-up host save without revoking its buffer 0ms
+   ✓ exclusive source handover > compares inside process and retains the exact pending buffer on conflict 1ms
+   ✓ exclusive source handover > refuses Reading and Live Preview before touching the source 0ms
+   ✓ exclusive source handover > refuses another same-file map or any popout 0ms
+   ✓ exclusive source handover > invalidates on a second Markdown view, rename, replacement and retire 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/obsidian/markdown/exclusive-edit.test.ts > exclusive source handover > refuses a non-idle leaf before revocation
+ FAIL  src/obsidian/markdown/exclusive-edit.test.ts > exclusive source handover > refuses a non-idle owner before revocation
+AssertionError: promise resolved "SourceAuthority{ app: { …(3) }, …(8) }" instead of rejecting
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- Error {[39m
+[32m-   "message": "rejected promise",[39m
+[31m+ SourceAuthority {[39m
+[31m+   "app": {[39m
+[31m+     "mindmapEditorRecovery": [[39m
+[31m+       {[39m
+[31m+         "applied": 1,[39m
+[31m+         "path": "Synthetic.md",[39m
+[31m+         "revision": 1,[39m
+[31m+         "target": "Markdown handover",[39m
+[31m+         "text": "# Pending[39m
+[31m+ ",[39m
+[31m+       },[39m
+[31m+     ],[39m
+[31m+     "vault": {[39m
+[31m+       "getAbstractFileByPath": [Function getAbstractFileByPath],[39m
+[31m+       "process": [Function spy],[39m
+[31m+     },[39m
+[31m+     "workspace": {[39m
+[31m+       "getLeavesOfType": [Function getLeavesOfType],[39m
+[31m+       "iterateAllLeaves": [Function iterateAllLeaves],[39m
+[31m+     },[39m
+[31m+   },[39m
+[31m+   "baseline": "# Pending[39m
+[31m+ ",[39m
+[31m+   "file": TFile {[39m
+[31m+     "path": "Synthetic.md",[39m
+[31m+   },[39m
+[31m+   "generation": 0,[39m
+[31m+   "mapView": {[39m
+[31m+     "currentFile": TFile {[39m
+[31m+       "path": "Synthetic.md",[39m
+[31m+     },[39m
+[31m+     "sourceSession": 0,[39m
+[31m+   },[39m
+[31m+   "owner": {[39m
+[31m+     "getContainer": [Function getContainer],[39m
+[31m+     "getViewState": [Function getViewState],[39m
+[31m+     "view": {[39m
+[31m+       "currentFile": TFile {[39m
+[31m+         "path": "Synthetic.md",[39m
+[31m+       },[39m
+[31m+       "sourceSession": 0,[39m
+[31m+     },[39m
+[31m+     "working": false,[39m
+[31m+   },[39m
+[31m+   "path": "Synthetic.md",[39m
+[31m+   "preview": {[39m
+[31m+     "getContainer": [Function getContainer],[39m
+[31m+     "getViewState": [Function getViewState],[39m
+[31m+     "isDeferred": false,[39m
+[31m+     "setViewState": [Function spy],[39m
+[31m+     "view": MarkdownView {[39m
+[31m+       "containerEl": {[39m
+[31m+         "inert": true,[39m
+[31m+       },[39m
+[31m+       "dirty": true,[39m
+[31m+       "editor": {[39m
+[31m+         "cm": {[39m
+[31m+           "composing": false,[39m
+[31m+           "compositionStarted": false,[39m
+[31m+         },[39m
+[31m+       },[39m
+[31m+       "file": null,[39m
+[31m+       "getMode": [Function getMode],[39m
+[31m+       "getState": [Function getState],[39m
+[31m+       "getViewData": [Function getViewData],[39m
+[31m+       "lastSavedData": "# Original[39m
+[31m+ ",[39m
+[31m+       "saveAgain": false,[39m
+[31m+       "saving": false,[39m
+[31m+     },[39m
+[31m+     "working": true,[39m
+[31m+   },[39m
+[31m+   "retired": false,[39m
+[2m  }[22m
+
+ ❯ src/obsidian/markdown/exclusive-edit.test.ts:124:67
+    122| 
+    123|       Reflect.set(f[who], 'working', true);
+    124|       await expect(SourceAuthority.acquire(f.app, f.file, f.owner)).re…
+       |                                                                   ^
+    125|       expect(f.source.file).toBe(f.file);
+    126|       expect(f.process).not.toHaveBeenCalled();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  src/obsidian/markdown/exclusive-edit.test.ts > exclusive source handover > preserves the original draft when a late pane transition changes its buffer context
+AssertionError: expected false to be true // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- true[39m
+[31m+ false[39m
+
+ ❯ src/obsidian/markdown/exclusive-edit.test.ts:139:79
+    137|     await expect(SourceAuthority.acquire(f.app, f.file, f.owner)).reje…
+    138|     expect(f.disk()).toBe('# Original\n');
+    139|     expect(recoveryDrafts(f.app).some(draft => draft.text === '# Pendi…
+       |                                                                               ^
+    140|   });
+    141| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+ FAIL  src/obsidian/markdown/exclusive-edit.test.ts > exclusive source handover > requires an acknowledged inert view transition, not a resolved no-op
+AssertionError: promise resolved "SourceAuthority{ app: { …(3) }, …(8) }" instead of rejecting
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- Error {[39m
+[32m-   "message": "rejected promise",[39m
+[31m+ SourceAuthority {[39m
+[31m+   "app": {[39m
+[31m+     "mindmapEditorRecovery": [[39m
+[31m+       {[39m
+[31m+         "applied": 1,[39m
+[31m+         "path": "Synthetic.md",[39m
+[31m+         "revision": 1,[39m
+[31m+         "target": "Markdown handover",[39m
+[31m+         "text": "# Pending[39m
+[31m+ ",[39m
+[31m+       },[39m
+[31m+     ],[39m
+[31m+     "vault": {[39m
+[31m+       "getAbstractFileByPath": [Function getAbstractFileByPath],[39m
+[31m+       "process": [Function spy],[39m
+[31m+     },[39m
+[31m+     "workspace": {[39m
+[31m+       "getLeavesOfType": [Function getLeavesOfType],[39m
+[31m+       "iterateAllLeaves": [Function iterateAllLeaves],[39m
+[31m+     },[39m
+[31m+   },[39m
+[31m+   "baseline": "# Pending[39m
+[31m+ ",[39m
+[31m+   "file": TFile {[39m
+[31m+     "path": "Synthetic.md",[39m
+[31m+   },[39m
+[31m+   "generation": 0,[39m
+[31m+   "mapView": {[39m
+[31m+     "currentFile": TFile {[39m
+[31m+       "path": "Synthetic.md",[39m
+[31m+     },[39m
+[31m+     "sourceSession": 0,[39m
+[31m+   },[39m
+[31m+   "owner": {[39m
+[31m+     "getContainer": [Function getContainer],[39m
+[31m+     "getViewState": [Function getViewState],[39m
+[31m+     "view": {[39m
+[31m+       "currentFile": TFile {[39m
+[31m+         "path": "Synthetic.md",[39m
+[31m+       },[39m
+[31m+       "sourceSession": 0,[39m
+[31m+     },[39m
+[31m+     "working": false,[39m
+[31m+   },[39m
+[31m+   "path": "Synthetic.md",[39m
+[31m+   "preview": {[39m
+[31m+     "getContainer": [Function getContainer],[39m
+[31m+     "getViewState": [Function getViewState],[39m
+[31m+     "isDeferred": false,[39m
+[31m+     "setViewState": [Function spy],[39m
+[31m+     "view": MarkdownView {[39m
+[31m+       "containerEl": {[39m
+[31m+         "inert": true,[39m
+[31m+       },[39m
+[31m+       "dirty": true,[39m
+[31m+       "editor": {[39m
+[31m+         "cm": {[39m
+[31m+           "composing": false,[39m
+[31m+           "compositionStarted": false,[39m
+[31m+         },[39m
+[31m+       },[39m
+[31m+       "file": null,[39m
+[31m+       "getMode": [Function getMode],[39m
+[31m+       "getState": [Function getState],[39m
+[31m+       "getViewData": [Function getViewData],[39m
+[31m+       "lastSavedData": "# Original[39m
+[31m+ ",[39m
+[31m+       "saveAgain": false,[39m
+[31m+       "saving": false,[39m
+[31m+     },[39m
+[31m+     "working": false,[39m
+[31m+   },[39m
+[31m+   "retired": false,[39m
+[2m  }[22m
+
+ ❯ src/obsidian/markdown/exclusive-edit.test.ts:146:65
+    144| 
+    145|     f.transition.mockImplementationOnce(async () => undefined);
+    146|     await expect(SourceAuthority.acquire(f.app, f.file, f.owner)).reje…
+       |                                                                 ^
+    147|     expect(recoveryDrafts(f.app).at(-1)?.text).toBe('# Pending\n');
+    148|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+ FAIL  src/obsidian/markdown/exclusive-edit.test.ts > exclusive source handover > retires authority when another Markdown pane has an unresolved transition target
+AssertionError: expected [Function] to throw an error
+
+[32m- Expected:[39m 
+null
+
+[31m+ Received:[39m 
+undefined
+
+ ❯ src/obsidian/markdown/exclusive-edit.test.ts:156:36
+    154|     f.reopen('Other.md');
+    155|     Reflect.set(f.leaf, 'working', true);
+    156|     expect(() => lease.validate()).toThrow('interrupted');
+       |                                    ^
+    157|     expect(lease.retired).toBe(true);
+    158|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  5 failed | 12 passed (17)
+   Start at  15:51:12
+   Duration  632ms (transform 64ms, setup 0ms, collect 67ms, tests 18ms, environment 0ms, prepare 77ms)
+

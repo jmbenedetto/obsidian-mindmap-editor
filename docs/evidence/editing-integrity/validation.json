@@ -1,0 +1,338 @@
+{
+  "recordedAt": "2026-11-01T20:52:07.786Z",
+  "baseline": "fb43537552c6712023191e8514f5f334f82e200a",
+  "branch": "feat/editing-integrity",
+  "headUnchanged": true,
+  "tests": {
+    "files": 28,
+    "passed": 354
+  },
+  "checks": {
+    "all-tests": 0,
+    "build-patch": 0,
+    "lint": 0,
+    "format": 0,
+    "diff-check": 0,
+    "scope-check": 0,
+    "lab-stop": 0,
+    "live-flows": 0,
+    "live-negative": 0,
+    "live-gate-verified": 0,
+    "live-map-only-after-handover": 0,
+    "live-map-only-visible": 0
+  },
+  "publicMethodProbe": {
+    "documentedExit": 1,
+    "controlsPassed": 3,
+    "candidateAssertionsFailed": 3,
+    "meaning": "Rejected candidate only; extracted methods and mock storage, not Electron"
+  },
+  "noSourceAcquisition": {
+    "driverExit": 1,
+    "outcome": "refused as documented; subsequent driver verified unchanged bytes",
+    "functionalPass": false
+  },
+  "obsidian": {
+    "apiVersion": "1.14.5",
+    "appJsSha256": "95b9fd3944625c3b88116878b03d655147fed8cdfe6ddf931f2064ead78ccd5b"
+  },
+  "bundleHashes": {
+    "main.js": "e19181c9275de490be16011cf1e7bf6fd2726e6c8e6943a4f261b28b2f413f8a",
+    "manifest.json": "d160c0936a59dc7ee5bdd5f0d21fd0fdbcc707a0e137854abbb50656a8e8f5fa",
+    "styles.css": "2d3bc14f996f25fdf22417e545251ac6bb2b4d0cb124c26261ed835e87684288"
+  },
+  "sourceHashes": {
+    ".prettierignore": "d3ca7f20cfd0e46b291e2648698fca2ebb64f0878445b15117574d1892f0abb1",
+    "LICENSE": "819c2348fe8ef703d7347cbd493069db840819ede236b459ca6e8d9d5a123bef",
+    "README.md": "49a0c25f3a9ad6f1a46275d2d883488a7d1f6609233aa5442f210f801113ebb3",
+    "docs/INTEGRITY.md": "de4c6299a35dd191100fd93bc1b1630eaf77e378db6355766ab184db9a6b562f",
+    "eslint.config.mts": "c5a8b5d5cc3d9272c41c15ae1a1199e28439b2e56b5e0320f9012bd05ea71373",
+    "logs.md": "8226ac7d289584504f309e8d359bf93002ed662fb279c70f87bcd9535293bea9",
+    "manifest.json": "d160c0936a59dc7ee5bdd5f0d21fd0fdbcc707a0e137854abbb50656a8e8f5fa",
+    "package-lock.json": "1adef10c45244b41906df33bf4f073f0718b531831e654c400fd96e8bdfef136",
+    "package.json": "f684d3889e8c7db21b2c49e40a28f258c6c1528a53d26cfbc387f89bf8c64fc8",
+    "src/core/auto-open.test.ts": "bbf5dd5eed3c59e1d2721484fd54bdac5cf2fdd16c44f524797c111f662d2f88",
+    "src/core/auto-open.ts": "837fd0e4117082fc04059ba2eeedcfc70eb97ffe2dde7dcd5c5279c66fd92fc4",
+    "src/core/bookmarks.test.ts": "89f3195bcfba052820984e4fc7b453ada354c630d41a48eab8772d6ce38cdfbc",
+    "src/core/bookmarks.ts": "9e42feca8b127d5286266ffa0b24831c5c41b960a42445b6d9e2a86447149ccf",
+    "src/core/folds.test.ts": "b6a87b3dae7cd2a32b71b87e246e8dcbbe3de64b7821f3411395a65edb3c87dd",
+    "src/core/folds.ts": "fec3d9bd237e5c549dc3e393e07dad34cc83fbb2121cb820ef811b29245a8cd2",
+    "src/core/parse/node-text.test.ts": "9dee18f864e4a7781130e120f667f5abb87f7198f8e54f9a85fd08e22e7edd71",
+    "src/core/parse/node-text.ts": "973cbc6bf61693dff0cb050ecd40150db0fdf342919eb2b19fc4776cd5f710ec",
+    "src/core/parse/parser.test.ts": "a65aef6fd36e03013be3e7292891d05b8910c3b224122673ffbc5bda48f89993",
+    "src/core/parse/parser.ts": "13a47c2ca377cd1f82f0413f3ca07ee607771d7a72e5532a7dd1b9ba22d538dc",
+    "src/core/parse/patterns.ts": "8de1a319b8bd53275c80f0048d4a0ecb4510f8001230af28346e0b800eecbedb",
+    "src/core/parse/source-context.ts": "f6dda66076ac556eaa4d12245694ca3b15e516ce0ff78a0acfd74b574721ffa9",
+    "src/core/render/colors.test.ts": "a18faf78c5383d18ecc6b2a85f0d31c5978c4bd78ecdb3ca13d35b74652debc0",
+    "src/core/render/colors.ts": "b67699a1af166524d35281cb68864bc3f32af82629c9e914948d3caecf854d4c",
+    "src/core/render/drag.test.ts": "22597d3e91407791b9883b8024079e045149b25deab95db4ff8634bff635c4f4",
+    "src/core/render/drag.ts": "cdff04ec9270eafdd40830396f80378f520b6b3098fd8094161c5d314936124d",
+    "src/core/render/layout.test.ts": "bf1dabafc5ef450181b3309e702ca413aec9bd465c6e68ddff35838c27d189ff",
+    "src/core/render/layout.ts": "84f5b5c9c79002a709124c9d01800ef22af13cf22045fdde790a802bc1fa69ee",
+    "src/core/render/mirror-cursor.test.ts": "afdf2cad6736ec219d2166f344d71d60a3b331a9282300890debf0959658316a",
+    "src/core/render/mirror-cursor.ts": "6765632895da8d3688a7c51bc0424456feda68037718115b91dbd1e8f2985d37",
+    "src/core/render/viewport-state.ts": "49201f1ef7f72a31a9e9addbbfe19f251b7d15dfa562681ac243f09145a6298f",
+    "src/core/render/zoom.test.ts": "83d15fa7d290d7a693c3a28f3b74c98a8816157c6ab1c0c0bcd615f3a14d7407",
+    "src/core/render/zoom.ts": "f8a9d83d81639aacb8d6fcf6763c967db78352988899165f71670e381d5e7d55",
+    "src/core/settings.ts": "23d630f8c742f7696553ad315ed878c59fb19af10141bff86b4f0b2a48c2cc5c",
+    "src/core/task-metadata.ts": "a7f70a553ea42ce77d30e81ca532d830707cb1f796fbf4090e72be5f0488e201",
+    "src/core/tasks.test.ts": "9307e88fc3b3f39de60a694838546da5e505a52b6d986ff0ee63031cf1ae2a69",
+    "src/core/tasks.ts": "667d0e566935cf45dc1ec2652372d31d4e1afdeb200c0a8866cd903e0a429a33",
+    "src/core/write/edit-value.test.ts": "b08fe15c8c0b8142933378a57a75e24317dcc94c88ab4c2701687cbdc98006d3",
+    "src/core/write/edit-value.ts": "c1e7f47e8495f3bfd723a220d3b27baf896730d9773707d15622bfa7a3dff901",
+    "src/core/write/ops.test.ts": "373061f3c3f24f6549813393580e459ae415a0c63b966d740ffb3dcc1223994b",
+    "src/core/write/ops.ts": "ef131713c355eedaf36dbc88d2e0f27e9152a65b0b436cab3bef44c725e579a5",
+    "src/core/write/relocate.ts": "6a5ef0061aa13c579eb7c5ab4bc29cf4a5b987311bce70a2a9c7a9a1c33794af",
+    "src/main.ts": "1b4424fae99b9a964f82e7d2c937ec660941904755166d391e32695d3f45f554",
+    "src/obsidian/bookmarks.ts": "88151af640d13051f9ccff1401d02b609e273dc8cdccdaac28f9ccf166390341",
+    "src/obsidian/map/auto-open.ts": "17689bd207c37b496fd4e3cd3cacb025851617fb15527ad9e325de4abc67dae5",
+    "src/obsidian/map/drag.ts": "81434f0257ae2be2856ccddd93bba76e1b8256eb01344d3d6301ff30084c010c",
+    "src/obsidian/map/inline-edit.ts": "a1e95b6ba17eab27d05b4133e1b4e2a7eaeef7e47802fb46a28d69316d420f67",
+    "src/obsidian/map/mindmap-view.ts": "cdca888947a8bf7916ec7622cabacf64175041f699c5de3bdb16d9166a906127",
+    "src/obsidian/map/node-text.test.ts": "41f1e958ac3f86e91eb0e760230d66f5b70cbef6fea5f8530663d4f5a1a0fe58",
+    "src/obsidian/map/node-text.ts": "1594d65f474c66a8b3ea264730ae268ff087e45230be25fe8ecadd1c2e20a4cc",
+    "src/obsidian/map/viewport.ts": "c9ce0da24f04499f27434e6f12c4fd9627cac33c21aba9c39fd42c82562bf31b",
+    "src/obsidian/markdown/editor-pane.ts": "b30922d0c9eaf1e0d487eb2faa9e48d20b8aae2fa239f47ed960d79f0b51e7d1",
+    "src/obsidian/markdown/exclusive-edit.test.ts": "070716fbd96d1297ed358d7ab595ac3c86b2e0ccd054edb329b5f53e57451efc",
+    "src/obsidian/markdown/exclusive-edit.ts": "92423c99ee88b20951baa0b8569c594aeab11ce2334d37aea14d3f89cd647a84",
+    "src/obsidian/markdown/file-io.test.ts": "98167945b4cf899627ead810e0ed5120a66c41bf516fd8209531af53f5603030",
+    "src/obsidian/markdown/file-io.ts": "be12ee46f8ef2c820498a7c4248b26add85d7bb8642fd689b123afb4312efa2f",
+    "src/obsidian/markdown/folds.ts": "ab7c089f91eac6d47f64c395bceb35209cb6804be1813773d67d17041c284625",
+    "src/obsidian/markdown/preview-line.ts": "c03992288ece753675e2991f3b5e881d10fb75e37abe8236f5bc3de01f594d08",
+    "src/obsidian/settings.ts": "b9ec1833881df58bcfe4ff667a45bd1c2b35ecd649c3b1b4cb00d03cad0e31af",
+    "src/obsidian/workspace.ts": "c358a2ef9f07e704f36aaf752b5ee96f7c24132695da509855ab52dc53eb7f6f",
+    "styles.css": "2d3bc14f996f25fdf22417e545251ac6bb2b4d0cb124c26261ed835e87684288",
+    "test/bookmark-menu.test.ts": "f3e426868a4b9f33d94f2bc3a964bf3e3823f6e1c72228d690e507bdae89b94d",
+    "test/bookmark-settings.test.ts": "d863b7dda61413c7beb47b95e2db3e8d0d904728fa52b0903b7a2ce7f94a588a",
+    "test/bookmark-tracking.test.ts": "a33e368b2d7960faf15a7b639e45fa4db0b46891ffcc9a9fc1ffeab996256121",
+    "test/e2e/editing/fidelity.js": "f7ddf4b913053c68f9a8b693ba56bd5ad6ba52a33130c1ce5ba0a9bd30cb569b",
+    "test/e2e/editing/keys.js": "6874815a28f80091389e4109ee8a18055f366145d5295352b6a044e6b857a4ca",
+    "test/e2e/navigation/bookmarks.js": "8ad27db568730cd55f503704171a3204e0a081adf0d550cf7a2df766ca502dc5",
+    "test/e2e/rendering/collapse-unselected.js": "baf6d9b3dd043c4ad8e7f96251fb94e27a9e056e8f74b6e58a4c5f06ad85b26d",
+    "test/e2e/rendering/colors.js": "8edfa98db7218b258b39854d5553056e1723a4930e653ae5b3118fc185677342",
+    "test/e2e/rendering/drag-rendered-node.js": "02c99a0891d65ab54eb78c4533c47e2471d0cc43eccd7c70d9e402bce85a5251",
+    "test/e2e/rendering/node-actions.js": "3310a258c02632b01a8c26066b44c40c5cd95455eb34e5cdc78730d4e4b47111",
+    "test/e2e/rendering/node-text.js": "2913cbec92262be6721fedbe75db619c2fd84aaabd2fbc65a0be4ad19215dd41",
+    "test/e2e/rendering/preview-indent.js": "7e915d6918bc28aca6b330896413a325dcf441d2a83b6cd4476073cc5467bc3c",
+    "test/e2e/rendering/root.js": "fe0e05695625ebe244702d50e4e65d4e11fd211e5a62b4053f12cf0d42e1092b",
+    "test/e2e/rendering/tasks.js": "9bcaab275a9b3515e92e2c6af19b5e346666a0f035bde56f8ba07e622640e431",
+    "test/e2e/run.mjs": "e88607d61c47cd454403431325a9390b4cf8d84b64475e1ed51108ec5e3ba775",
+    "test/e2e/suite.mjs": "2656cf87cfb0f0e30119c419cc869d27c3e8f949f98a688f82338c0fd95fc4fe",
+    "test/e2e/support/harness.js": "4b9b4893467f38f9dd3fef0409b6c5f21d9b3beb01259aa21e87e9822eb3c690",
+    "test/e2e/viewport/active-linked-viewport.js": "5bd967e934e7c3230901f3536945272679c67352729ddbbb7f3d4cf72c7b1bbc",
+    "test/e2e/viewport/async-layout.js": "bb1b9a9cdba26e579e5bb2170e074828cf7aaa3b90f57777012f15c4b2462653",
+    "test/e2e/viewport/command-cursor.js": "1418dc10307abca0b175ff1e3c9ce1723b94a383cd974e69e03dbaa51a74a310",
+    "test/e2e/viewport/initial-framing.js": "9d5cb3b4e978b7f0595c7a05b5791d802267829e3b7e4710b8f6a40a964bca81",
+    "test/e2e/viewport/initial-viewport.js": "3edd764bb2106a16f509ab59d11cdb549555e33f8cfad9cdc1e99a49c13181be",
+    "test/e2e/viewport/plugin-reload.js": "02f0b0f9af959474f767e8636fa924272f7e8c636fab4f6f617a006518563ac3",
+    "test/e2e/viewport/viewport.js": "b2a912b140e3c352c1f6a3d00b1598fb2b42f3cd711b12ba438ab99b78195d4f",
+    "test/e2e/viewport/zoom.js": "f38eb7d71ac552243752ea406b58b3918471fba844697b401f35ab9a4593565b",
+    "test/e2e/workspace/mobile.js": "771f03f8969cc7fb69feea990cae28a1c68f08a381fd3e8fc253e750bc86b931",
+    "test/e2e/workspace/panes.js": "ad90da53a4d7a5dfe00702e4b1912a2faf26dc618f39854ab4c952651102e034",
+    "test/e2e/workspace/popout.js": "6e8442671977f7b18ee5950482fc58bfe1569cc82be3281c56306fc116076e23",
+    "test/e2e/workspace/selected-pane.js": "d7bca0149d2ef74117b2d2fc5f5e538f91571c1d1d6c7fc01fe15c88205a6dec",
+    "test/inline-edit.test.ts": "265e53263ac96c83f1f3b8a08442bfac90904d135ee97f7529c3f1b3ecdb9959",
+    "test/integrity.test.ts": "ee8465ed35a71b7c0fd3c79b5a0266d8ac6bfc943daab4d8132d1e40c49f9681",
+    "test/open-map.test.ts": "f1cc00dc3f1927726045e59548649dc316dd58cb09f79e18beb800a2550ef57c",
+    "test/persistence-queue.test.ts": "74141c2252baaeeb6666000da470ef62f3bcd08ccdb368e4e90e16b98db5e4d9",
+    "test/probes/authority-handover.mjs": "7a9b6fc2b6c04133a3f01ceaf40a0336e64595ae250bdaf286d87244a4624072",
+    "test/stale-edit.test.ts": "13d02aada8ec445fe0c0ee36592dc49d680f3b101627b90afbb0ded00aed0543",
+    "test/structural-integrity.test.ts": "a891eaea13a848c731755ca2679c515a47ff07e247702cc4e1d98ffbd01f3bed",
+    "test/stubs/obsidian-dom.ts": "06d0505710b807566c272b1ec394debce9279362164e6ec878ffedeb79671299",
+    "test/stubs/obsidian.ts": "504660604ac089cbf341e33fd6986f7af6770dcf56ca8b774cfcd2da42744eab",
+    "test/view-state.test.ts": "0277d14e2ac8eb4aae9035b51ceb0b6c0261d7f0ba7e085b8057acc8b58dcef4",
+    "test/viewport.test.ts": "1af19d450fe8887571f2963f2312dcc15c72325eef2bc7b3275371a98f9ee273",
+    "test/write-ops.test.ts": "a3ff32c46798852c3ca64cf04c0dbe667e47ebd34fd76926febe0571cbbd8014"
+  },
+  "artifactOrigins": [
+    {
+      "from": "all-tests.log",
+      "to": "all-tests.log"
+    },
+    {
+      "from": "build-patch.log",
+      "to": "build-patch.log"
+    },
+    {
+      "from": "lint.log",
+      "to": "lint.log"
+    },
+    {
+      "from": "format.log",
+      "to": "format.log"
+    },
+    {
+      "from": "diff-check.log",
+      "to": "diff-check.log"
+    },
+    {
+      "from": "scope-check.log",
+      "to": "scope-check.log"
+    },
+    {
+      "from": "red-integrity.log",
+      "to": "red-integrity.log"
+    },
+    {
+      "from": "red-structural.log",
+      "to": "red-structural.log"
+    },
+    {
+      "from": "red-disposal.log",
+      "to": "red-disposal.log"
+    },
+    {
+      "from": "red-connected-reset.log",
+      "to": "red-connected-reset.log"
+    },
+    {
+      "from": "red-transition.log",
+      "to": "red-transition.log"
+    },
+    {
+      "from": "authority-final.tap",
+      "to": "authority-final.tap"
+    },
+    {
+      "from": "live-gate-verified.json",
+      "to": "live-gate-verified.json"
+    },
+    {
+      "from": "live-gate-verified.log",
+      "to": "live-gate-verified.log"
+    },
+    {
+      "from": "live-flows.json",
+      "to": "live-flows.json"
+    },
+    {
+      "from": "live-flows.log",
+      "to": "live-flows.log"
+    },
+    {
+      "from": "live-negative.json",
+      "to": "live-negative.json"
+    },
+    {
+      "from": "live-negative.log",
+      "to": "live-negative.log"
+    },
+    {
+      "from": "live-map-only.log",
+      "to": "live-map-only.log"
+    },
+    {
+      "from": "live-map-only-after-handover.json",
+      "to": "live-map-only-after-handover.json"
+    },
+    {
+      "from": "live-map-only-after-handover.log",
+      "to": "live-map-only-after-handover.log"
+    },
+    {
+      "from": "live-map-only-visible.json",
+      "to": "live-map-only-visible.json"
+    },
+    {
+      "from": "live-map-only-visible.log",
+      "to": "live-map-only-visible.log"
+    },
+    {
+      "from": "live-flows-setup.log",
+      "to": "live-flows-setup.log"
+    },
+    {
+      "from": "live-flows-timeout.log",
+      "to": "live-flows-timeout.log"
+    },
+    {
+      "from": "live-flows-focus.log",
+      "to": "live-flows-focus.log"
+    },
+    {
+      "from": "live-flows-geometry.log",
+      "to": "live-flows-geometry.log"
+    },
+    {
+      "from": "live-modal-close.log",
+      "to": "live-modal-close.log"
+    },
+    {
+      "from": "pre-restart.log",
+      "to": "pre-restart.log"
+    },
+    {
+      "from": "snapshot-before-restart.json",
+      "to": "snapshot-before-restart.json"
+    },
+    {
+      "from": "lab-stop.json",
+      "to": "lab-stop.json"
+    },
+    {
+      "from": "map-flow.png",
+      "to": "map-flow.png"
+    },
+    {
+      "from": "recovery-modal.png",
+      "to": "recovery-modal.png"
+    },
+    {
+      "from": "map-only-visible.png",
+      "to": "map-only.png"
+    },
+    {
+      "from": "lab-eval.mjs",
+      "to": "drivers/lab-eval.mjs"
+    },
+    {
+      "from": "live-flows.js",
+      "to": "drivers/live-flows.js"
+    },
+    {
+      "from": "live-negative.js",
+      "to": "drivers/live-negative.js"
+    },
+    {
+      "from": "live-gate-verified.js",
+      "to": "drivers/live-gate-verified.js"
+    },
+    {
+      "from": "live-map-only.js",
+      "to": "drivers/live-map-only.js"
+    },
+    {
+      "from": "live-map-only-after-handover.js",
+      "to": "drivers/live-map-only-after-handover.js"
+    },
+    {
+      "from": "live-map-only-visible.js",
+      "to": "drivers/live-map-only-visible.js"
+    },
+    {
+      "from": "snapshot-before-restart.js",
+      "to": "drivers/snapshot-before-restart.js"
+    }
+  ],
+  "labStop": {
+    "stopped": true,
+    "pid": 40659,
+    "signal": "SIGTERM",
+    "personalPidControlled": false,
+    "personalPidAlive": true,
+    "rawFixtureDraftCopied": true,
+    "pluginRestartRecovery": false
+  },
+  "limits": [
+    "No production qualification",
+    "No physical typing/drag/drop or real OS IME",
+    "No persistent recovery journal",
+    "No mobile, other host versions, full disposal-history, multi-instance/sync or long-duration qualification"
+  ],
+  "deployment": {
+    "syntheticLabOnly": true,
+    "commit": false,
+    "push": false,
+    "release": false
+  }
+}

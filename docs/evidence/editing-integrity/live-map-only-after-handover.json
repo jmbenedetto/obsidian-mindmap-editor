@@ -1,0 +1,10 @@
+{
+  "kind": "actual host APIs and synthetic DOM input, not physical input",
+  "mode": "map only after acknowledged handover, then inert-preview closure",
+  "fixture": "MapOnly-Verified.md",
+  "markdownPanes": 0,
+  "inertPanes": 0,
+  "oldSourceRevoked": true,
+  "after": "# Map-only 👩🏽‍💻\n",
+  "pass": true
+}

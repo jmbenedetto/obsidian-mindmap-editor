@@ -2,6 +2,10 @@
   padding: 0;
 }
 
+.mindmap-recovery-draft {
+  width: 100%;
+}
+
 .mindmap-scroller {
   width: 100%;
   height: 100%;

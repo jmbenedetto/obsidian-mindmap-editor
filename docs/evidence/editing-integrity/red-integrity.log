@@ -1,0 +1,141 @@
+
+> mindmap-editor@1.9.0 test
+> vitest run test/integrity.test.ts
+
+
+ RUN  v3.2.7 /Users/jmb/code/obsidian-mindmap-editor
+
+ ❯ test/integrity.test.ts (6 tests | 5 failed) 25ms
+   × F01, actual inline writer > persists final intent after a pending autosave, without a reopen flush 18ms
+     → expected '# first\n' to be '# final\n' // Object.is equality
+   × F01, actual inline writer > persists A to B to A while B is pending 2ms
+     → expected '# B\n' to be '# Draft\n' // Object.is equality
+   × F02, actual direct-file Undo > refuses an interleaved writer inside the atomic callback and retains its record 1ms
+     → expected '# Before\n' to be '# After\nEXTERNAL\n' // Object.is equality
+   ✓ F02, actual direct-file Undo > still applies uncontested Undo 1ms
+   × N07, actual branch moves > preserves literal headings in ``` while changing real hierarchy 1ms
+     → expected '# Target\n\n## Source\n```text\n## li…' to contain '```text\n# literal\n```'
+   × N07, actual branch moves > preserves literal headings in ~~~ while changing real hierarchy 0ms
+     → expected '# Target\n\n## Source\n~~~text\n## li…' to contain '~~~text\n# literal\n~~~'
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/integrity.test.ts > F01, actual inline writer > persists final intent after a pending autosave, without a reopen flush
+AssertionError: expected '# first\n' to be '# final\n' // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- # fi[7mnal[27m[39m
+[31m+ # fi[7mrst[27m[39m
+
+
+ ❯ test/integrity.test.ts:80:22
+     78|     f.gate.resolve();
+     79|     await vi.runAllTimersAsync();
+     80|     expect(f.disk()).toBe('# final\n');
+       |                      ^
+     81|   });
+     82| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  test/integrity.test.ts > F01, actual inline writer > persists A to B to A while B is pending
+AssertionError: expected '# B\n' to be '# Draft\n' // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- # [7mDraft[27m[39m
+[31m+ # [7mB[27m[39m
+
+
+ ❯ test/integrity.test.ts:91:22
+     89|     f.gate.resolve();
+     90|     await vi.runAllTimersAsync();
+     91|     expect(f.disk()).toBe('# Draft\n');
+       |                      ^
+     92|   });
+     93| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+ FAIL  test/integrity.test.ts > F02, actual direct-file Undo > refuses an interleaved writer inside the atomic callback and retains its record
+AssertionError: expected '# Before\n' to be '# After\nEXTERNAL\n' // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- # [7mAfter[27m[39m
+[32m- EXTERNAL[39m
+[31m+ # [7mBefore[27m[39m
+
+
+ ❯ test/integrity.test.ts:124:22
+    122|     (Reflect.get(f.view, 'undoLastWrite') as () => boolean).call(f.vie…
+    123|     await new Promise((resolve) => setTimeout(resolve, 0));
+    124|     expect(f.disk()).toBe('# After\nEXTERNAL\n');
+       |                      ^
+    125|     expect(Reflect.get(f.view, 'undoable')).toBe(f.kept);
+    126|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+ FAIL  test/integrity.test.ts > N07, actual branch moves > preserves literal headings in ``` while changing real hierarchy
+AssertionError: expected '# Target\n\n## Source\n```text\n## li…' to contain '```text\n# literal\n```'
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[31m+ # Target[39m
+[31m+[39m
+[31m+ ## Source[39m
+[2m  ```text[22m
+[32m- # literal[39m
+[31m+ [7m#[27m# literal[39m
+[2m  ```[22m
+[31m+ ### Child[39m
+[31m+ body[39m
+
+ ❯ test/integrity.test.ts:143:21
+    141|       const root = parseMarkdown(text, 'Synthetic');
+    142|       const after = moveNodesOp(text.split('\n'), [root.children[0]!],…
+    143|       expect(after).toContain(`${fence}text\n# literal\n${fence}`);
+       |                     ^
+    144|       const target = parseMarkdown(after, 'Synthetic').children[0]!;
+    145|       expect(target.text).toBe('Target');
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯
+
+ FAIL  test/integrity.test.ts > N07, actual branch moves > preserves literal headings in ~~~ while changing real hierarchy
+AssertionError: expected '# Target\n\n## Source\n~~~text\n## li…' to contain '~~~text\n# literal\n~~~'
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[31m+ # Target[39m
+[31m+[39m
+[31m+ ## Source[39m
+[2m  ~~~text[22m
+[32m- # literal[39m
+[31m+ [7m#[27m# literal[39m
+[2m  ~~~[22m
+[31m+ ### Child[39m
+[31m+ body[39m
+
+ ❯ test/integrity.test.ts:143:21
+    141|       const root = parseMarkdown(text, 'Synthetic');
+    142|       const after = moveNodesOp(text.split('\n'), [root.children[0]!],…
+    143|       expect(after).toContain(`${fence}text\n# literal\n${fence}`);
+       |                     ^
+    144|       const target = parseMarkdown(after, 'Synthetic').children[0]!;
+    145|       expect(target.text).toBe('Target');
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/5]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  5 failed | 1 passed (6)
+   Start at  12:56:11
+   Duration  935ms (transform 173ms, setup 0ms, collect 208ms, tests 25ms, environment 303ms, prepare 40ms)
+

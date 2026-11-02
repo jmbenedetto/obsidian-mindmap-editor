@@ -1,0 +1,173 @@
+
+> mindmap-editor@1.9.0 test
+> vitest run
+
+
+ RUN  v3.2.7 /Users/jmb/code/obsidian-mindmap-editor
+
+ ✓ src/obsidian/markdown/exclusive-edit.test.ts (7 tests) 7ms
+ ✓ src/core/bookmarks.test.ts (21 tests) 7ms
+ ✓ src/core/parse/parser.test.ts (30 tests) 10ms
+ ✓ src/core/tasks.test.ts (10 tests) 5ms
+ ✓ test/write-ops.test.ts (10 tests) 12ms
+ ✓ src/core/write/ops.test.ts (33 tests) 14ms
+ ✓ test/open-map.test.ts (5 tests) 6ms
+ ✓ test/bookmark-tracking.test.ts (13 tests) 9ms
+ ❯ test/structural-integrity.test.ts (25 tests | 9 failed) 25ms
+   × structural byte and hierarchy preservation > moves real hierarchy only: ```js, "\n" 11ms
+     → expected '---\ntitle: "Português 👩🏽\u200d💻"\…' to be '---\ntitle: "Português 👩🏽\u200d💻"\…' // Object.is equality
+   × structural byte and hierarchy preservation > moves real hierarchy only: ```js, "\r\n" 1ms
+     → expected '---\r\ntitle: "Português 👩🏽\u200d💻…' to be '---\r\ntitle: "Português 👩🏽\u200d💻…' // Object.is equality
+   × structural byte and hierarchy preservation > moves real hierarchy only: ~~~text, "\n" 1ms
+     → expected '---\ntitle: "Português 👩🏽\u200d💻"\…' to be '---\ntitle: "Português 👩🏽\u200d💻"\…' // Object.is equality
+   × structural byte and hierarchy preservation > moves real hierarchy only: ~~~text, "\r\n" 1ms
+     → expected '---\r\ntitle: "Português 👩🏽\u200d💻…' to be '---\r\ntitle: "Português 👩🏽\u200d💻…' // Object.is equality
+   × structural byte and hierarchy preservation > moves real hierarchy only: ````text, "\n" 1ms
+     → expected '---\ntitle: "Português 👩🏽\u200d💻"\…' to be '---\ntitle: "Português 👩🏽\u200d💻"\…' // Object.is equality
+   × structural byte and hierarchy preservation > moves real hierarchy only: ````text, "\r\n" 0ms
+     → expected '---\r\ntitle: "Português 👩🏽\u200d💻…' to be '---\r\ntitle: "Português 👩🏽\u200d💻…' // Object.is equality
+   × structural byte and hierarchy preservation > moves real hierarchy only: ~~~~~, "\n" 0ms
+     → expected '---\ntitle: "Português 👩🏽\u200d💻"\…' to be '---\ntitle: "Português 👩🏽\u200d💻"\…' // Object.is equality
+   × structural byte and hierarchy preservation > moves real hierarchy only: ~~~~~, "\r\n" 0ms
+     → expected '---\r\ntitle: "Português 👩🏽\u200d💻…' to be '---\r\ntitle: "Português 👩🏽\u200d💻…' // Object.is equality
+   ✓ structural byte and hierarchy preservation > preserves final-newline state in a Unicode label edit: "" 0ms
+   ✓ structural byte and hierarchy preservation > preserves final-newline state in a Unicode label edit: "\n" 1ms
+   ✓ structural byte and hierarchy preservation > preserves final-newline state in a Unicode label edit: "\r\n" 0ms
+   ✓ structural byte and hierarchy preservation > safely refuses ambiguous source/destination without mutating input: "# Source\n```\n# literal\n# Target\n" 2ms
+   ✓ structural byte and hierarchy preservation > safely refuses ambiguous source/destination without mutating input: "# Source\nbody\n# Target\n~~~~\n# hidden destination\n" 0ms
+   ✓ structural byte and hierarchy preservation > safely refuses ambiguous source/destination without mutating input: "# Source\n- ```text\n# literal\n- ```\n# Target\n" 0ms
+   ✓ structural byte and hierarchy preservation > safely refuses ambiguous source/destination without mutating input: "# Source\n> ~~~\n# literal\n> ~~~\n# Target\n" 0ms
+   ✓ structural byte and hierarchy preservation > safely refuses ambiguous source/destination without mutating input: "# Source\n    ```\n# literal\n    ```\n# Target\n" 0ms
+   ✓ structural byte and hierarchy preservation > safely refuses ambiguous source/destination without mutating input: "# Source\n  ~~~\n# literal\n  ~~~\n# Target\n" 0ms
+   ✓ structural byte and hierarchy preservation > safely refuses ambiguous source/destination without mutating input: "---\nkey: x\n# Source\n# Target\n" 0ms
+   ✓ structural byte and hierarchy preservation > safely refuses ambiguous source/destination without mutating input: "# Source\n<!-- unclosed\n# Target\n" 0ms
+   ✓ structural byte and hierarchy preservation > safely refuses ambiguous source/destination without mutating input: "# Source\n%% unclosed\n# Target\n" 0ms
+   ✓ structural byte and hierarchy preservation > safely refuses ambiguous source/destination without mutating input: "# Source\n<!-- one --> <!-- two\n# Target\n" 0ms
+   ✓ structural byte and hierarchy preservation > safely refuses ambiguous source/destination without mutating input: "# Source\n<pre>\n# literal\n</pre>\n# Target\n" 0ms
+   × structural byte and hierarchy preservation > refuses heading overflow instead of clamping the hierarchy 3ms
+     → expected [Function] to throw error including 'overflow' but got 'Mindmap: invalid or overlapping move …'
+   ✓ structural byte and hierarchy preservation > preserves duplicate labels by actual source range during reordering 0ms
+   ✓ structural byte and hierarchy preservation > preserves a mixed-EOL no-op and refuses a mutation rather than normalizing bytes 0ms
+ ✓ src/core/auto-open.test.ts (4 tests) 3ms
+ ✓ src/obsidian/markdown/file-io.test.ts (4 tests) 2ms
+ ✓ test/stale-edit.test.ts (7 tests) 6ms
+ ✓ src/core/folds.test.ts (21 tests) 5ms
+ ✓ src/core/render/drag.test.ts (6 tests) 6ms
+ ✓ src/core/render/colors.test.ts (18 tests) 5ms
+ ✓ src/core/render/zoom.test.ts (3 tests) 2ms
+ ✓ src/core/render/layout.test.ts (9 tests) 7ms
+ ✓ test/bookmark-settings.test.ts (1 test) 4ms
+ ✓ src/core/parse/node-text.test.ts (6 tests) 3ms
+ ✓ src/core/render/mirror-cursor.test.ts (3 tests) 4ms
+ ✓ src/core/write/edit-value.test.ts (1 test) 2ms
+ ✓ test/viewport.test.ts (8 tests) 11ms
+ ✓ test/inline-edit.test.ts (10 tests) 16ms
+ ✓ src/obsidian/map/node-text.test.ts (13 tests) 39ms
+ ✓ test/integrity.test.ts (6 tests) 22ms
+ ✓ test/bookmark-menu.test.ts (10 tests) 78ms
+ ✓ test/view-state.test.ts (20 tests) 96ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 9 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/structural-integrity.test.ts > structural byte and hierarchy preservation > moves real hierarchy only: ```js, "\n"
+ FAIL  test/structural-integrity.test.ts > structural byte and hierarchy preservation > moves real hierarchy only: ~~~text, "\n"
+ FAIL  test/structural-integrity.test.ts > structural byte and hierarchy preservation > moves real hierarchy only: ````text, "\n"
+ FAIL  test/structural-integrity.test.ts > structural byte and hierarchy preservation > moves real hierarchy only: ~~~~~, "\n"
+AssertionError: expected '---\ntitle: "Português 👩🏽\u200d💻"\…' to be '---\ntitle: "Português 👩🏽\u200d💻"\…' // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[33m@@ -2,10 +2,11 @@[39m
+[2m  title: "Português 👩🏽‍💻"[22m
+[2m  other: "# not a heading"[22m
+[2m  ---[22m
+[2m  # Target[22m
+[2m  adjacent prose[22m
+[31m+[39m
+[2m  ## Source[22m
+[2m  | A | B |[22m
+[2m  | - | - |[22m
+[2m  | é | ✅ |[22m
+[2m  [[Linked|ligação]] ![[local.png]][22m
+[33m@@ -18,6 +19,5 @@[39m
+[2m  <!-- retained original[22m
+[2m  # comment literal[22m
+[2m  -->[22m
+[2m  ### Child[22m
+[2m  body[22m
+[32m-[39m
+
+ ❯ test/structural-integrity.test.ts:35:23
+     33|         const after = joinLike(result, original);
+     34|         const expected = (FRONT + targetBlock + sourceBlock.replace('#…
+     35|         expect(after).toBe(expected);
+       |                       ^
+     36|         expect(lines.join(eol)).toBe(original);
+     37|         const tree = parseMarkdown(after, 'Note');
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/9]⎯
+
+ FAIL  test/structural-integrity.test.ts > structural byte and hierarchy preservation > moves real hierarchy only: ```js, "\r\n"
+ FAIL  test/structural-integrity.test.ts > structural byte and hierarchy preservation > moves real hierarchy only: ~~~text, "\r\n"
+ FAIL  test/structural-integrity.test.ts > structural byte and hierarchy preservation > moves real hierarchy only: ````text, "\r\n"
+ FAIL  test/structural-integrity.test.ts > structural byte and hierarchy preservation > moves real hierarchy only: ~~~~~, "\r\n"
+AssertionError: expected '---\r\ntitle: "Português 👩🏽\u200d💻…' to be '---\r\ntitle: "Português 👩🏽\u200d💻…' // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[33m@@ -2,10 +2,11 @@[39m
+[2m  title: "Português 👩🏽‍💻"[22m
+[2m  other: "# not a heading"[22m
+[2m  ---[22m
+[2m  # Target[22m
+[2m  adjacent prose[22m
+[31m+ [39m
+[2m  ## Source[22m
+[2m  | A | B |[22m
+[2m  | - | - |[22m
+[2m  | é | ✅ |[22m
+[2m  [[Linked|ligação]] ![[local.png]][22m
+[33m@@ -17,7 +18,6 @@[39m
+[2m  ```[22m
+[2m  <!-- retained original[22m
+[2m  # comment literal[22m
+[2m  -->[22m
+[2m  ### Child[22m
+[32m- body[7m[27m[39m
+[32m-[39m
+[31m+ body[39m
+
+ ❯ test/structural-integrity.test.ts:35:23
+     33|         const after = joinLike(result, original);
+     34|         const expected = (FRONT + targetBlock + sourceBlock.replace('#…
+     35|         expect(after).toBe(expected);
+       |                       ^
+     36|         expect(lines.join(eol)).toBe(original);
+     37|         const tree = parseMarkdown(after, 'Note');
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/9]⎯
+
+ FAIL  test/structural-integrity.test.ts > structural byte and hierarchy preservation > refuses heading overflow instead of clamping the hierarchy
+AssertionError: expected [Function] to throw error including 'overflow' but got 'Mindmap: invalid or overlapping move …'
+
+Expected: [32m"overflow"[39m
+Received: [31m"Mindmap: invalid or overlapping move boundaries."[39m
+
+ ❯ test/structural-integrity.test.ts:80:86
+     78|     const root = parseMarkdown(text, 'Note');
+     79|     const lines = text.split('\n');
+     80|     expect(() => moveNodesOp(lines, [named(root, 'Source')], named(roo…
+       |                                                                                      ^
+     81|     expect(lines.join('\n')).toBe(text);
+     82|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/9]⎯
+
+
+ Test Files  1 failed | 26 passed (27)
+      Tests  9 failed | 295 passed (304)
+   Start at  13:19:24
+   Duration  2.47s (transform 1.19s, setup 0ms, collect 2.64s, tests 404ms, environment 3.59s, prepare 1.64s)
+

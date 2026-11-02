@@ -1,0 +1,19 @@
+{
+  "kind": "actual host APIs, actual disk and synthetic DOM events; no physical input",
+  "undo": {
+    "status": "SAFE REFUSAL",
+    "recordRetained": true,
+    "markerPreserved": true
+  },
+  "draft": {
+    "status": "SAFE REFUSAL",
+    "raw": "unacknowledged 👩🏽‍💻 é\nraw extra",
+    "revision": 1,
+    "applied": 0,
+    "error": "The source write was refused. This exact draft has not been acknowledged.",
+    "modalExact": true
+  },
+  "releaseToSource": true,
+  "viewAndPluginReloadRecovery": true,
+  "after": "# Lists\n- Beta\n  beta body\n  - Alpha\n    alpha body\n    - A1\n  - Gamma\n<!-- EXTERNAL marker — preserve me -->\n<!-- DRAFT external marker -->\n"
+}
