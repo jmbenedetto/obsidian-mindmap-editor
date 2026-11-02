@@ -1,0 +1,29 @@
+HOST_ERROR Mindmap: failed to update the file Error: Undo refused: the current file no longer matches this exact Undo record.
+    at eval (plugin:mindmap-editor:26:2241)
+    at e.<anonymous> (app://obsidian.md/app.js:1:552566)
+    at app://obsidian.md/app.js:1:254188
+    at Object.next (app://obsidian.md/app.js:1:254293)
+    at a (app://obsidian.md/app.js:1:253011)
+HOST_ERROR Mindmap: failed to update the file Error: The source baseline or map owner changed. The operation was refused.
+    at eval (plugin:mindmap-editor:26:1171)
+    at e.<anonymous> (app://obsidian.md/app.js:1:552566)
+    at app://obsidian.md/app.js:1:254188
+    at Object.next (app://obsidian.md/app.js:1:254293)
+    at a (app://obsidian.md/app.js:1:253011)
+HOST_ERROR Mindmap: failed to update the file Error: Acquire from exactly one loaded raw Source pane, with no popouts.
+    at r.acquire (plugin:mindmap-editor:17:2119)
+    at C.requireAuthority (plugin:mindmap-editor:24:1172)
+    at eval (plugin:mindmap-editor:18:10586)
+    at HTMLButtonElement.<anonymous> (app://obsidian.md/app.js:1:1239432)
+    at <anonymous>:16:79
+IDENTITY {"vault":"/Users/jmb/code/obsidian-mindmap-editor/.agents/tmp/01a197ae-ed4e-70f7-b7ce-81049f628a1e/authority-lab/vault","home":"/Users/jmb/code/obsidian-mindmap-editor/.agents/tmp/01a197ae-ed4e-70f7-b7ce-81049f628a1e/authority-lab/home"}
+{
+  "kind": "actual host APIs and synthetic DOM input, not physical input",
+  "mode": "map only after acknowledged handover, then inert-preview closure",
+  "fixture": "MapOnly-Verified.md",
+  "markdownPanes": 0,
+  "inertPanes": 0,
+  "oldSourceRevoked": true,
+  "after": "# Map-only 👩🏽‍💻\n",
+  "pass": true
+}

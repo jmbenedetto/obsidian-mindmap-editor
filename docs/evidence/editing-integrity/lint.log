@@ -1,0 +1,12 @@
+
+> mindmap-editor@1.9.0 lint
+> npm run lint:js && npm run lint:css
+
+
+> mindmap-editor@1.9.0 lint:js
+> eslint . --max-warnings=0
+
+
+> mindmap-editor@1.9.0 lint:css
+> stylelint styles.css --max-warnings=0
+

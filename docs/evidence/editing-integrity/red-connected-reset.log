@@ -1,0 +1,72 @@
+
+ RUN  v3.2.7 /Users/jmb/code/obsidian-mindmap-editor
+
+ ❯ test/integrity.test.ts (17 tests | 2 failed | 15 skipped) 20ms
+   × F01, actual inline writer > does not reinterpret an unobserved connected DOM reset as input: null 17ms
+     → expected '# \n' to be '# Draft\n' // Object.is equality
+   × F01, actual inline writer > does not reinterpret an unobserved connected DOM reset as input: "last actual input 👩🏽‍💻" 3ms
+     → expected '# \n' to be '# last actual input 👩🏽\u200d💻\n' // Object.is equality
+   ↓ F01, actual inline writer > acknowledges an exact empty label without discarding it as falsy
+   ↓ F01, actual inline writer > retains metadata through task-title autosave and an A-to-B-to-A finish
+   ↓ F01, actual inline writer > refuses implicit task conversion from a plain label and retains its exact draft
+   ↓ F01, actual inline writer > keeps late composition input recoverable without saving working IME text
+   ↓ F01, actual inline writer > retains the last connected raw draft when the editing DOM is disposed
+   ↓ F01, actual inline writer > does not let an older failed request poison a newer successful acknowledgement
+   ↓ F01, actual inline writer > keeps a newer raw draft dirty after an older acknowledgement
+   ↓ F01, actual inline writer > retains the exact draft and original bytes after a file switch
+   ↓ F01, actual inline writer > does not replay a committed label when redraw fails
+   ↓ F01, actual inline writer > persists final intent after a pending autosave, without a reopen flush
+   ↓ F01, actual inline writer > persists A to B to A while B is pending
+   ↓ F02, actual direct-file Undo > refuses an interleaved writer inside the atomic callback and retains its record
+   ↓ F02, actual direct-file Undo > still applies uncontested Undo
+   ↓ N07, actual branch moves > preserves literal headings in ``` while changing real hierarchy
+   ↓ N07, actual branch moves > preserves literal headings in ~~~ while changing real hierarchy
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/integrity.test.ts > F01, actual inline writer > does not reinterpret an unobserved connected DOM reset as input: null
+AssertionError: expected '# \n' to be '# Draft\n' // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- # [7mDraft[27m[39m
+[31m+ # [39m
+
+
+ ❯ test/integrity.test.ts:126:24
+    124|       f.gate.resolve();
+    125|       await vi.runAllTimersAsync();
+    126|       expect(f.disk()).toBe(`# ${observed ?? 'Draft'}\n`);
+       |                        ^
+    127|     });
+    128|   }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  test/integrity.test.ts > F01, actual inline writer > does not reinterpret an unobserved connected DOM reset as input: "last actual input 👩🏽‍💻"
+AssertionError: expected '# \n' to be '# last actual input 👩🏽\u200d💻\n' // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- # [7mlast actual input 👩🏽‍💻[27m[39m
+[31m+ # [39m
+
+
+ ❯ test/integrity.test.ts:126:24
+    124|       f.gate.resolve();
+    125|       await vi.runAllTimersAsync();
+    126|       expect(f.disk()).toBe(`# ${observed ?? 'Draft'}\n`);
+       |                        ^
+    127|     });
+    128|   }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 15 skipped (17)
+   Start at  16:23:12
+   Duration  1.07s (transform 198ms, setup 0ms, collect 237ms, tests 20ms, environment 423ms, prepare 52ms)
+

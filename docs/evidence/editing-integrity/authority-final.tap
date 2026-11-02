@@ -1,0 +1,84 @@
+{"application":"1.14.5","appJsSha256":"95b9fd3944625c3b88116878b03d655147fed8cdfe6ddf931f2064ead78ccd5b"}
+✔ control: uncontested save acknowledges "Final" (0.891375ms)
+✔ control: uncontested save acknowledges "" (0.128042ms)
+✔ control: uncontested unload writes its current buffer (0.163666ms)
+✖ candidate gate: awaited save acknowledges the latest pending buffer (1.67375ms)
+✖ candidate gate: awaited unload drains an already running save (0.296875ms)
+✖ candidate gate: save then unload acknowledges an empty pending buffer (0.263084ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 3
+ℹ fail 3
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 217.718958
+
+✖ failing tests:
+
+test at test/probes/authority-handover.mjs:124:1
+✖ candidate gate: awaited save acknowledges the latest pending buffer (1.67375ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+    {
+  +   disk: 'Original',
+  +   saveAgain: true,
+  +   saving: true
+  -   disk: 'Final',
+  -   saveAgain: false,
+  -   saving: false
+    }
+  
+      at TestContext.<anonymous> (file:///Users/jmb/code/obsidian-mindmap-editor/test/probes/authority-handover.mjs:134:10)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: { disk: 'Original', saving: true, saveAgain: true },
+    expected: { disk: 'Final', saving: false, saveAgain: false },
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at test/probes/authority-handover.mjs:137:1
+✖ candidate gate: awaited unload drains an already running save (0.296875ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+    {
+  +   activeAtUnload: true,
+  +   calls: 1,
+  +   disk: 'Draft'
+  -   activeAtUnload: false,
+  -   calls: 2,
+  -   disk: 'Final'
+    }
+  
+      at TestContext.<anonymous> (file:///Users/jmb/code/obsidian-mindmap-editor/test/probes/authority-handover.mjs:148:10)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: { activeAtUnload: true, disk: 'Draft', calls: 1 },
+    expected: { activeAtUnload: false, disk: 'Final', calls: 2 },
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at test/probes/authority-handover.mjs:154:1
+✖ candidate gate: save then unload acknowledges an empty pending buffer (0.263084ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  'Draft' !== ''
+  
+      at TestContext.<anonymous> (file:///Users/jmb/code/obsidian-mindmap-editor/test/probes/authority-handover.mjs:164:10)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'Draft',
+    expected: '',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

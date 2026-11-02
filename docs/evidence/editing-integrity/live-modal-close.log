@@ -1,0 +1,27 @@
+HOST_ERROR Mindmap: failed to update the file Error: Undo refused: the current file no longer matches this exact Undo record.
+    at eval (plugin:mindmap-editor:26:2241)
+    at e.<anonymous> (app://obsidian.md/app.js:1:552566)
+    at app://obsidian.md/app.js:1:254188
+    at Object.next (app://obsidian.md/app.js:1:254293)
+    at a (app://obsidian.md/app.js:1:253011)
+HOST_ERROR Mindmap: failed to update the file Error: The source baseline or map owner changed. The operation was refused.
+    at eval (plugin:mindmap-editor:26:1171)
+    at e.<anonymous> (app://obsidian.md/app.js:1:552566)
+    at app://obsidian.md/app.js:1:254188
+    at Object.next (app://obsidian.md/app.js:1:254293)
+    at a (app://obsidian.md/app.js:1:253011)
+HOST_ERROR Mindmap: failed to update the file Error: Acquire from exactly one loaded raw Source pane, with no popouts.
+    at r.acquire (plugin:mindmap-editor:17:2119)
+    at C.requireAuthority (plugin:mindmap-editor:24:1172)
+    at eval (plugin:mindmap-editor:18:10586)
+    at HTMLButtonElement.<anonymous> (app://obsidian.md/app.js:1:1239432)
+    at <anonymous>:16:79
+IDENTITY {"vault":"/Users/jmb/code/obsidian-mindmap-editor/.agents/tmp/01a197ae-ed4e-70f7-b7ce-81049f628a1e/authority-lab/vault","home":"/Users/jmb/code/obsidian-mindmap-editor/.agents/tmp/01a197ae-ed4e-70f7-b7ce-81049f628a1e/authority-lab/home"}
+file:///Users/jmb/code/obsidian-mindmap-editor/.agents/tmp/01a197ae-ed4e-70f7-b7ce-81049f628a1e/lab-eval.mjs:25
+  if (result.result?.exceptionDetails || result.error) throw new Error(JSON.stringify(result.result?.exceptionDetails ?? result.error));
+                                                             ^
+
+Error: {"exceptionId":4,"text":"Uncaught (in promise) Error: Recovery modal did not close","lineNumber":1,"columnNumber":222,"scriptId":"172","stackTrace":{"callFrames":[{"functionName":"check","scriptId":"172","url":"","lineNumber":0,"columnNumber":221},{"functionName":"","scriptId":"172","url":"","lineNumber":2,"columnNumber":0},{"functionName":"","scriptId":"172","url":"","lineNumber":24,"columnNumber":2}]},"exception":{"type":"object","subtype":"error","className":"Error","description":"Error: Recovery modal did not close\n    at check (<anonymous>:1:222)\n    at <anonymous>:3:1\n    at <anonymous>:25:3","objectId":"-3402797672777828697.1.4"}}
+    at file:///Users/jmb/code/obsidian-mindmap-editor/.agents/tmp/01a197ae-ed4e-70f7-b7ce-81049f628a1e/lab-eval.mjs:25:62
+
+Node.js v26.12.1

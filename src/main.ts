@@ -27,6 +27,11 @@ import {
   updateBookmarkAnchor,
 } from './core/bookmarks';
 import { MindNode, parseMarkdown } from './core/parse/parser';
+import {
+  INERT_VIEW,
+  InertSourceView,
+  RecoveryModal,
+} from './obsidian/markdown/exclusive-edit';
 
 function descendantFilePaths(file: TAbstractFile): string[] {
   if (file instanceof TFile) {
@@ -71,6 +76,12 @@ export default class MindmapPlugin extends Plugin {
       VIEW_TYPE_MINDMAP,
       (leaf: WorkspaceLeaf) => new MindmapView(leaf, this),
     );
+    this.registerView(INERT_VIEW, (leaf) => new InertSourceView(leaf));
+    this.addCommand({
+      id: 'recover-map-drafts',
+      name: 'Recover map drafts',
+      callback: () => new RecoveryModal(this.app).open(),
+    });
     this.addRibbonIcon(MINDMAP_ICON, 'Open mind map', () => {
       void this.openMindmap();
     });

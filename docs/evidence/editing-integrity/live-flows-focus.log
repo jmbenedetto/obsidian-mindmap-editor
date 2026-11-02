@@ -1,0 +1,9 @@
+IDENTITY {"vault":"/Users/jmb/code/obsidian-mindmap-editor/.agents/tmp/01a197ae-ed4e-70f7-b7ce-81049f628a1e/authority-lab/vault","home":"/Users/jmb/code/obsidian-mindmap-editor/.agents/tmp/01a197ae-ed4e-70f7-b7ce-81049f628a1e/authority-lab/home"}
+file:///Users/jmb/code/obsidian-mindmap-editor/.agents/tmp/01a197ae-ed4e-70f7-b7ce-81049f628a1e/lab-eval.mjs:25
+  if (result.result?.exceptionDetails || result.error) throw new Error(JSON.stringify(result.result?.exceptionDetails ?? result.error));
+                                                             ^
+
+Error: {"exceptionId":1,"text":"Uncaught (in promise) Error: Focus ended the editor; this is not a pending-autosave case","lineNumber":3,"columnNumber":41,"scriptId":"161","stackTrace":{"callFrames":[{"functionName":"check","scriptId":"161","url":"","lineNumber":2,"columnNumber":40},{"functionName":"","scriptId":"161","url":"","lineNumber":54,"columnNumber":1}]},"exception":{"type":"object","subtype":"error","className":"Error","description":"Error: Focus ended the editor; this is not a pending-autosave case\n    at check (<anonymous>:3:41)\n    at <anonymous>:55:2","objectId":"-3402797672777828697.1.1"}}
+    at file:///Users/jmb/code/obsidian-mindmap-editor/.agents/tmp/01a197ae-ed4e-70f7-b7ce-81049f628a1e/lab-eval.mjs:25:62
+
+Node.js v26.12.1

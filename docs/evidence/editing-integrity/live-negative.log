@@ -1,0 +1,32 @@
+IDENTITY {"vault":"/Users/jmb/code/obsidian-mindmap-editor/.agents/tmp/01a197ae-ed4e-70f7-b7ce-81049f628a1e/authority-lab/vault","home":"/Users/jmb/code/obsidian-mindmap-editor/.agents/tmp/01a197ae-ed4e-70f7-b7ce-81049f628a1e/authority-lab/home"}
+HOST_ERROR Mindmap: failed to update the file Error: Undo refused: the current file no longer matches this exact Undo record.
+    at eval (plugin:mindmap-editor:26:2241)
+    at e.<anonymous> (app://obsidian.md/app.js:1:552566)
+    at app://obsidian.md/app.js:1:254188
+    at Object.next (app://obsidian.md/app.js:1:254293)
+    at a (app://obsidian.md/app.js:1:253011)
+HOST_ERROR Mindmap: failed to update the file Error: The source baseline or map owner changed. The operation was refused.
+    at eval (plugin:mindmap-editor:26:1171)
+    at e.<anonymous> (app://obsidian.md/app.js:1:552566)
+    at app://obsidian.md/app.js:1:254188
+    at Object.next (app://obsidian.md/app.js:1:254293)
+    at a (app://obsidian.md/app.js:1:253011)
+{
+  "kind": "actual host APIs, actual disk and synthetic DOM events; no physical input",
+  "undo": {
+    "status": "SAFE REFUSAL",
+    "recordRetained": true,
+    "markerPreserved": true
+  },
+  "draft": {
+    "status": "SAFE REFUSAL",
+    "raw": "unacknowledged 👩🏽‍💻 é\nraw extra",
+    "revision": 1,
+    "applied": 0,
+    "error": "The source write was refused. This exact draft has not been acknowledged.",
+    "modalExact": true
+  },
+  "releaseToSource": true,
+  "viewAndPluginReloadRecovery": true,
+  "after": "# Lists\n- Beta\n  beta body\n  - Alpha\n    alpha body\n    - A1\n  - Gamma\n<!-- EXTERNAL marker — preserve me -->\n<!-- DRAFT external marker -->\n"
+}

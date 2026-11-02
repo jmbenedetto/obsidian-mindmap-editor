@@ -1,0 +1,9 @@
+IDENTITY {"vault":"/Users/jmb/code/obsidian-mindmap-editor/.agents/tmp/01a197ae-ed4e-70f7-b7ce-81049f628a1e/authority-lab/vault","home":"/Users/jmb/code/obsidian-mindmap-editor/.agents/tmp/01a197ae-ed4e-70f7-b7ce-81049f628a1e/authority-lab/home"}
+file:///Users/jmb/code/obsidian-mindmap-editor/.agents/tmp/01a197ae-ed4e-70f7-b7ce-81049f628a1e/lab-eval.mjs:25
+  if (result.result?.exceptionDetails || result.error) throw new Error(JSON.stringify(result.result?.exceptionDetails ?? result.error));
+                                                             ^
+
+Error: {"exceptionId":2,"text":"Uncaught (in promise) Error: Map is not visibly laid out","lineNumber":3,"columnNumber":41,"scriptId":"164","stackTrace":{"callFrames":[{"functionName":"check","scriptId":"164","url":"","lineNumber":2,"columnNumber":40},{"functionName":"openCase","scriptId":"164","url":"","lineNumber":28,"columnNumber":1}]},"exception":{"type":"object","subtype":"error","className":"Error","description":"Error: Map is not visibly laid out\n    at check (<anonymous>:3:41)\n    at openCase (<anonymous>:29:2)\n    at async <anonymous>:45:9","objectId":"-3402797672777828697.1.1"}}
+    at file:///Users/jmb/code/obsidian-mindmap-editor/.agents/tmp/01a197ae-ed4e-70f7-b7ce-81049f628a1e/lab-eval.mjs:25:62
+
+Node.js v26.12.1

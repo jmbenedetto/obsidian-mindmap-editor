@@ -115,7 +115,15 @@ describe('a write aimed at one node', () => {
             t.type === 'list',
         );
 
-        if (target) {
+        if (target && node.type === 'heading') {
+          const original = src.split('\n');
+
+          expect(() => moveNodeOp(original, node, target)).toThrow(
+            'unsupported',
+          );
+          expect(original.join('\n')).toBe(src);
+        }
+        if (target && node.type === 'list') {
           const after = moveNodeOp(src.split('\n'), node, target);
 
           keepsOtherText(src, node, after);

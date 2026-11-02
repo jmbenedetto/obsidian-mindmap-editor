@@ -22,13 +22,17 @@ function open(options: { text?: string } = {}) {
   const write = vi.fn();
   const restore = vi.fn();
   const setEditing = vi.fn();
+  const capture = vi.fn();
+  const interrupted = vi.fn();
 
-  runEditor({
+  const finish = runEditor({
     input,
     value: () => singleLineValue(input.innerText),
     placeCaret: () => undefined,
     restore,
     write,
+    capture,
+    interrupted,
     setEditing,
     reflow: () => undefined,
     settle: () => false,
@@ -44,7 +48,18 @@ function open(options: { text?: string } = {}) {
     input.dispatchEvent(new Event('input', { bubbles: true }));
   };
 
-  return { input, host, write, restore, setEditing, press, type };
+  return {
+    input,
+    host,
+    write,
+    restore,
+    setEditing,
+    capture,
+    interrupted,
+    finish,
+    press,
+    type,
+  };
 }
 
 beforeEach(() => {
@@ -139,6 +154,68 @@ describe('leaving an edit', () => {
     vi.advanceTimersByTime(400);
 
     expect(e.write).not.toHaveBeenCalled();
+  });
+});
+
+describe('asynchronous finalization', () => {
+  it('joins a finish reentered from synchronous cleanup', async () => {
+    const e = open();
+    let reentered: Promise<void> | undefined;
+    let once = false;
+
+    e.setEditing.mockImplementation((editing: boolean) => {
+      if (!editing && !once) {
+        once = true;
+        reentered = e.finish();
+      }
+    });
+    const first = e.finish();
+
+    await first;
+    expect(reentered).toBe(first);
+    expect(e.restore).toHaveBeenCalledOnce();
+  });
+
+  it('joins repeated finish calls and waits for the last requested save', async () => {
+    const e = open();
+    let resolve!: () => void;
+    const pending = new Promise<void>((done) => {
+      resolve = done;
+    });
+
+    e.write.mockReturnValue(pending);
+    e.type('final');
+    const first = e.finish();
+
+    expect(e.finish()).toBe(first);
+    expect(e.restore).not.toHaveBeenCalled();
+    expect(e.capture).toHaveBeenCalled();
+    resolve();
+    await first;
+    expect(e.restore).toHaveBeenCalledOnce();
+    expect(e.write).toHaveBeenCalledWith('final');
+  });
+
+  it('does not discard the visible draft on a rejected save', async () => {
+    const e = open();
+
+    e.write.mockRejectedValue(new Error('conflict'));
+    e.type('exact unacknowledged draft');
+    await e.finish();
+    expect(e.restore).not.toHaveBeenCalled();
+    expect(e.input.textContent).toBe('exact unacknowledged draft');
+    expect(e.capture).toHaveBeenCalled();
+  });
+
+  it('retains interrupted composition without submitting working IME text', async () => {
+    const e = open();
+
+    e.input.dispatchEvent(new CompositionEvent('compositionstart'));
+    e.type('か');
+    await e.finish();
+    expect(e.write).not.toHaveBeenCalled();
+    expect(e.interrupted).toHaveBeenCalledOnce();
+    expect(e.capture).toHaveBeenCalled();
   });
 });
 

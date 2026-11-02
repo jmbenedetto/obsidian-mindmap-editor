@@ -1,0 +1,9 @@
+{
+  "stopped": true,
+  "pid": 40659,
+  "signal": "SIGTERM",
+  "personalPidControlled": false,
+  "personalPidAlive": true,
+  "rawFixtureDraftCopied": true,
+  "pluginRestartRecovery": false
+}

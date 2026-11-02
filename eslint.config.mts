@@ -9,6 +9,9 @@ export default defineConfig(
   globalIgnores([
     'node_modules',
     'dist',
+    '.agents/tmp',
+    '.pi',
+    '.tmp',
     // The dev vault holds fixtures and a third-party plugin, neither ours.
     'dev-vault',
     'esbuild.config.mjs',
@@ -16,6 +19,10 @@ export default defineConfig(
     // Hand-run harness: a Node driver and a snippet the renderer evaluates,
     // which is a function body rather than a module.
     'test/e2e',
+    // Version-pinned, hand-run host-method experiments, not plugin modules.
+    'test/probes',
+    // Archived renderer bodies are evidence, not plugin modules.
+    'docs/evidence/editing-integrity',
     'versions.json',
     'main.js',
     'package.json',

@@ -100,6 +100,21 @@ const LINE = /\r?\n/;
  * must not turn into a whole-file diff because one line of it was edited.
  */
 export function joinLike(lines: string[], like: string): string {
+  const plain = lines.join('\n');
+  const normalized = like.replace(/\r\n/g, '\n');
+
+  if (plain === normalized) {
+    return like;
+  }
+  if (
+    /\r(?!\n)/.test(like) ||
+    (like.includes('\r\n') && /(?<!\r)\n/.test(like))
+  ) {
+    throw new Error(
+      'Mixed or bare-CR line endings are unsupported for map writes. The original bytes were preserved.',
+    );
+  }
+
   return lines.join(like.includes('\r\n') ? '\r\n' : '\n');
 }
 

@@ -1,0 +1,49 @@
+{
+  "kind": "final built plugin and actual disk through host APIs; no physical input; delay is supplementary, not ownership acknowledgement",
+  "results": [
+    {
+      "name": "Gate-Verified-Nonempty.md",
+      "before": {
+        "saving": false,
+        "saveAgain": false,
+        "dirty": true,
+        "lastSavedData": "# Original\n",
+        "buffer": "# Pending português 👩🏽‍💻 é\n",
+        "rendered": "# Original\n",
+        "sourceWorking": false
+      },
+      "transferred": "# Pending português 👩🏽‍💻 é\n",
+      "inert": {
+        "type": "mindmap-editor-inert-source",
+        "mutableElements": 0
+      },
+      "revoked": true,
+      "after": "# Map commit\n",
+      "reopened": 0,
+      "supplementaryObservationMs": 2500,
+      "pass": true
+    },
+    {
+      "name": "Gate-Verified-Empty.md",
+      "before": {
+        "saving": false,
+        "saveAgain": false,
+        "dirty": true,
+        "lastSavedData": "# Original\n",
+        "buffer": "",
+        "rendered": "# Original\n",
+        "sourceWorking": false
+      },
+      "transferred": "",
+      "inert": {
+        "type": "mindmap-editor-inert-source",
+        "mutableElements": 0
+      },
+      "revoked": true,
+      "after": "# Map commit\n",
+      "reopened": 0,
+      "supplementaryObservationMs": 2500,
+      "pass": true
+    }
+  ]
+}

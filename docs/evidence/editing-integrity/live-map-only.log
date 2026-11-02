@@ -1,0 +1,21 @@
+HOST_ERROR Mindmap: failed to update the file Error: Undo refused: the current file no longer matches this exact Undo record.
+    at eval (plugin:mindmap-editor:26:2241)
+    at e.<anonymous> (app://obsidian.md/app.js:1:552566)
+    at app://obsidian.md/app.js:1:254188
+    at Object.next (app://obsidian.md/app.js:1:254293)
+    at a (app://obsidian.md/app.js:1:253011)
+HOST_ERROR Mindmap: failed to update the file Error: The source baseline or map owner changed. The operation was refused.
+    at eval (plugin:mindmap-editor:26:1171)
+    at e.<anonymous> (app://obsidian.md/app.js:1:552566)
+    at app://obsidian.md/app.js:1:254188
+    at Object.next (app://obsidian.md/app.js:1:254293)
+    at a (app://obsidian.md/app.js:1:253011)
+IDENTITY {"vault":"/Users/jmb/code/obsidian-mindmap-editor/.agents/tmp/01a197ae-ed4e-70f7-b7ce-81049f628a1e/authority-lab/vault","home":"/Users/jmb/code/obsidian-mindmap-editor/.agents/tmp/01a197ae-ed4e-70f7-b7ce-81049f628a1e/authority-lab/home"}
+file:///Users/jmb/code/obsidian-mindmap-editor/.agents/tmp/01a197ae-ed4e-70f7-b7ce-81049f628a1e/lab-eval.mjs:25
+  if (result.result?.exceptionDetails || result.error) throw new Error(JSON.stringify(result.result?.exceptionDetails ?? result.error));
+                                                             ^
+
+Error: {"exceptionId":3,"text":"Uncaught (in promise) Error: Acquire from exactly one loaded raw Source pane, with no popouts.","lineNumber":17,"columnNumber":2119,"scriptId":"168","stackTrace":{"callFrames":[{"functionName":"acquire","scriptId":"168","url":"plugin:mindmap-editor","lineNumber":16,"columnNumber":2118},{"functionName":"requireAuthority","scriptId":"168","url":"plugin:mindmap-editor","lineNumber":23,"columnNumber":1171},{"functionName":"eval","scriptId":"168","url":"plugin:mindmap-editor","lineNumber":17,"columnNumber":10585},{"functionName":"","scriptId":"143","url":"app://obsidian.md/app.js","lineNumber":0,"columnNumber":1239431},{"functionName":"","scriptId":"170","url":"","lineNumber":15,"columnNumber":78}]},"exception":{"type":"object","subtype":"error","className":"Error","description":"Error: Acquire from exactly one loaded raw Source pane, with no popouts.\n    at r.acquire (plugin:mindmap-editor:17:2119)\n    at C.requireAuthority (plugin:mindmap-editor:24:1172)\n    at eval (plugin:mindmap-editor:18:10586)\n    at HTMLButtonElement.<anonymous> (app://obsidian.md/app.js:1:1239432)\n    at <anonymous>:16:79","objectId":"-3402797672777828697.1.3"}}
+    at file:///Users/jmb/code/obsidian-mindmap-editor/.agents/tmp/01a197ae-ed4e-70f7-b7ce-81049f628a1e/lab-eval.mjs:25:62
+
+Node.js v26.12.1

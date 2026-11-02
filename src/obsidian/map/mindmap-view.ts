@@ -20,6 +20,7 @@ import {
   parseMarkdown,
 } from '../../core/parse/parser';
 import { FENCE_RE } from '../../core/parse/patterns';
+import { requireStructuralContext } from '../../core/parse/source-context';
 import { relocateNode, relocateTaskNode } from '../../core/write/relocate';
 import {
   branchTargets,
@@ -54,7 +55,6 @@ import { canDrop } from '../../core/render/drag';
 import { singleLineValue } from '../../core/write/edit-value';
 import { taskEditUpdates, taskProgress } from '../../core/tasks';
 import {
-  formatTaskMetadata,
   priorityMark,
   TaskMetadata,
   TaskPriority,
@@ -78,7 +78,6 @@ import {
 import {
   addChildOp,
   addSiblingOp,
-  addTaskNoteOp,
   deleteNodeOp,
   deleteNodesOp,
   InsertResult,
@@ -94,9 +93,15 @@ import {
   findEditingView,
   findFocusedEditingView,
   findMarkdownView,
-  updateFileLines,
+  joinLike,
   WroteToDisk,
 } from '../markdown/file-io';
+
+import {
+  recoveryDrafts,
+  RecoveryDraft,
+  SourceAuthority,
+} from '../markdown/exclusive-edit';
 
 export const VIEW_TYPE_MINDMAP = 'mindmap-editor';
 export const MINDMAP_ICON = 'workflow';
@@ -228,9 +233,21 @@ export class MindmapView extends ItemView {
   /** A just-added node, to select and open for naming after the render. */
   private insertedLine: number | null = null;
   /** The last write the map made with no editor pane to remember it. */
-  private undoable: (WroteToDisk & { path: string }) | null = null;
+  private undoable: Readonly<
+    WroteToDisk & { path: string; owner?: SourceAuthority }
+  > | null = null;
   /** Ends the edit on screen, for when the map is asked for its keyboard back. */
-  private closeEdit: (() => void) | null = null;
+  private closeEdit: (() => Promise<void>) | null = null;
+  private authority: SourceAuthority | null = null;
+  private acquiring: Promise<SourceAuthority> | null = null;
+  private sourceQueue: Promise<void> = Promise.resolve();
+  private closed = false;
+  private navigationSeq = 0;
+  private structureRevision = 0;
+  private renderedStructureRevision = 0;
+  private renderedFile: TFile | null = null;
+  private authorityNeedsRender = false;
+  private activeDraft: RecoveryDraft | null = null;
   private isInlineEditing = false;
   private isDragging = false;
   private renderQueued = false;
@@ -366,6 +383,7 @@ export class MindmapView extends ItemView {
       app: this.app,
       leaf,
       file: () => this.file,
+      editingBlocked: () => !!(this.authority || this.acquiring),
       openSplit: (near) => plugin.openSplit(near ?? leaf),
       // This map's own document: in a window of its own, the main window's
       // active element is never anything of ours.
@@ -473,7 +491,7 @@ export class MindmapView extends ItemView {
       // Obsidian consumes Escape before the document capture listener in
       // some releases, so finish the edit from the scope that saw it.
       if (key === 'Escape') {
-        this.closeEdit?.();
+        void this.closeEdit?.();
 
         return false;
       }
@@ -1107,6 +1125,10 @@ export class MindmapView extends ItemView {
     return this.file;
   }
 
+  get sourceSession(): number {
+    return this.navigationSeq ?? 0;
+  }
+
   getIcon(): string {
     return MINDMAP_ICON;
   }
@@ -1558,6 +1580,16 @@ export class MindmapView extends ItemView {
         this.toggleAllCollapse(FoldKind.Text),
       ),
     );
+    this.addAction('lock-keyhole', 'Acquire exclusive map editing', () => {
+      if (this.file) {
+        void this.requireAuthority(this.file)
+          .then(() => this.render())
+          .catch((error: unknown) => this.reportOpError(error));
+      }
+    });
+    this.addAction('unlock-keyhole', 'Release map editing', () => {
+      void this.releaseAuthority();
+    });
     this.addAction('refresh-cw', 'Refresh from the Markdown', () => {
       void this.forceRefresh();
     });
@@ -1594,7 +1626,9 @@ export class MindmapView extends ItemView {
     // The map asking for the keyboard back is the end of any edit still open:
     // an edit left behind when the focus went elsewhere must not keep the keys
     // it is no longer typing into.
-    this.scrollerEl.addEventListener('focus', () => this.closeEdit?.());
+    this.scrollerEl.addEventListener('focus', () => {
+      void this.closeEdit?.();
+    });
 
     this.registerWorkspaceEvents();
     // During workspace restore, renders can run before files and editors
@@ -1606,6 +1640,9 @@ export class MindmapView extends ItemView {
 
   /** Left up by a map that is gone, the mark quiets the pane's next flash. */
   async onClose(): Promise<void> {
+    await this.closeEdit?.();
+    this.closed = true;
+    this.authority?.retire();
     this.saveViewport();
     this.persistViewport.cancel();
     this.removeTaskPickers();
@@ -1669,6 +1706,7 @@ export class MindmapView extends ItemView {
     this.registerEvent(
       this.app.workspace.on('editor-change', (_editor, info) => {
         if (this.isCurrentFile(info.file)) {
+          this.checkAuthority();
           this.followEditorCursor();
           this.requestRender();
         }
@@ -1679,12 +1717,14 @@ export class MindmapView extends ItemView {
     this.registerEvent(
       this.app.vault.on('rename', (file) => {
         if (this.isCurrentFile(file)) {
+          this.checkAuthority();
           this.requestRender();
         }
       }),
     );
     this.registerEvent(
       this.app.workspace.on('active-leaf-change', (leaf) => {
+        this.checkAuthority();
         const editorStillOpen = this.editor.hasOpenLastActive();
         const returning = this.returningFromBodyEdit;
 
@@ -1705,7 +1745,10 @@ export class MindmapView extends ItemView {
       }),
     );
     this.registerEvent(
-      this.app.workspace.on('file-open', (file) => this.followFile(file)),
+      this.app.workspace.on('file-open', (file) => {
+        this.checkAuthority();
+        this.followFile(file);
+      }),
     );
     // Unlinking hands the pane back to the active file, and no file-open
     // follows it: the note the user wants is the one already open.
@@ -1718,9 +1761,20 @@ export class MindmapView extends ItemView {
       }),
     );
     this.registerEvent(
-      this.app.workspace.on('layout-change', () =>
-        this.handleLinkedSourceClose(),
-      ),
+      this.app.workspace.on('layout-change', () => {
+        this.checkAuthority();
+        this.handleLinkedSourceClose();
+      }),
+    );
+    this.registerEvent(
+      this.app.vault.on('delete', () => this.checkAuthority()),
+    );
+    this.registerEvent(
+      this.app.workspace.on('window-open', () => {
+        this.interruptAuthority(
+          'A popout interrupted exclusive editing. Recover drafts, then release and acquire again.',
+        );
+      }),
     );
     this.registerDomEvent(this.scrollerEl, 'pointerdown', (e) =>
       this.onBackgroundPointerDown(e),
@@ -1951,6 +2005,19 @@ export class MindmapView extends ItemView {
   }
 
   async setFile(file: TFile): Promise<void> {
+    const navigation = (this.navigationSeq = (this.navigationSeq ?? 0) + 1);
+
+    await this.closeEdit?.();
+    await this.sourceQueue;
+    if (navigation !== this.navigationSeq || this.closed) {
+      return;
+    }
+    this.authority?.retire();
+    this.authority = null;
+    this.authorityNeedsRender = false;
+    this.undoable = null;
+    this.activeDraft = null;
+    this.closeEdit = null;
     this.saveViewport();
     this.persistViewport.cancel();
     this.viewportReady = false;
@@ -2286,7 +2353,7 @@ export class MindmapView extends ItemView {
       this.editor.linkedLeaf() ?? this.leaf,
     )?.editor.getValue();
 
-    return editorText || this.app.vault.cachedRead(this.file);
+    return editorText ?? this.app.vault.cachedRead(this.file);
   }
 
   private async render(switched = false): Promise<void> {
@@ -2323,12 +2390,19 @@ export class MindmapView extends ItemView {
       return;
     }
 
+    const file = this.file;
+    const navigation = this.navigationSeq ?? 0;
+    const current = (): boolean =>
+      seq === this.renderSeq &&
+      this.file === file &&
+      (this.navigationSeq ?? 0) === navigation &&
+      !this.closed;
     const text = await this.getFileText(switched);
 
     // Renders can overlap across the await above (an op's render plus the
     // debounced editor-change render). Only the newest may touch the DOM;
     // an interleaved rebuild duplicates nodes and desyncs laidByLine.
-    if (seq !== this.renderSeq) {
+    if (!current()) {
       return;
     }
     if (this.isBusy() || this.contentEl.offsetHeight === 0) {
@@ -2336,7 +2410,7 @@ export class MindmapView extends ItemView {
 
       return;
     }
-    const parsed = parseMarkdown(text, this.file.basename);
+    const parsed = parseMarkdown(text, file.basename);
     const pendingOwner =
       this.pendingBodyLine?.path === this.file.path
         ? findByLine(parsed, this.pendingBodyLine.ownerLine)
@@ -2354,14 +2428,14 @@ export class MindmapView extends ItemView {
     ) {
       this.pendingBodyLine = null;
     }
-    const previous =
-      !switched && this.renderedSource
-        ? parseMarkdown(this.renderedSource, this.file.basename)
-        : null;
+    let previous: MindNode | null = null;
+
+    if (!switched && this.renderedFile === file && this.renderedSource) {
+      previous = parseMarkdown(this.renderedSource, file.basename);
+    }
     const taskUpdates = previous ? taskEditUpdates(previous, parsed) : [];
 
-    if (taskUpdates.length && !this.syncingTasks) {
-      const file = this.file;
+    if (taskUpdates.length && !this.syncingTasks && this.authority) {
       let synced = false;
 
       this.syncingTasks = true;
@@ -2377,6 +2451,9 @@ export class MindmapView extends ItemView {
         this.reportOpError(err);
       } finally {
         this.syncingTasks = false;
+      }
+      if (!current()) {
+        return;
       }
       if (synced) {
         await this.render(switched);
@@ -2405,7 +2482,13 @@ export class MindmapView extends ItemView {
     this.canvasEl.empty();
     this.laidByLine.clear();
     this.root = parsed;
+    this.renderedStructureRevision = this.structureRevision;
+    this.renderedFile = file;
     this.renderedSource = text;
+    this.authorityNeedsRender =
+      !!this.authority &&
+      text.replace(/\r\n/g, '\n') !==
+        this.authority.baseline.replace(/\r\n/g, '\n');
     // Keyed by line, so re-derive: the editor's folds, else prune.
     if (!this.pullEditorFolds(this.root)) {
       this.collapsedBranches = pruneLines(
@@ -2426,11 +2509,11 @@ export class MindmapView extends ItemView {
     this.laidRoot = this.buildNode(this.root, palette);
     this.pendingTextRenders = null;
     await Promise.all(textRenders);
-    if (seq !== this.renderSeq) {
+    if (!current()) {
       return;
     }
     await this.waitForRenderedImages();
-    if (seq !== this.renderSeq) {
+    if (!current()) {
       return;
     }
     // Reading and rendering Markdown can outlive the tab's visible layout.
@@ -3238,7 +3321,7 @@ export class MindmapView extends ItemView {
     this.endBodyEdit();
     // Mobile has one visible leaf: showing Markdown here would replace the
     // map merely because a node was selected, with no map pane to return to.
-    if (this.plugin.isMobile) {
+    if (this.plugin.isMobile || this.authority || this.acquiring) {
       return;
     }
     // Picking a node is asking to read that note, so it goes to the front
@@ -3318,7 +3401,7 @@ export class MindmapView extends ItemView {
    * without that, working in one map drags every other one onto its note.
    */
   private async pointEditorAtFile(): Promise<void> {
-    if (!this.file) {
+    if (!this.file || this.authority || this.acquiring) {
       return;
     }
     const had = this.containerEl.contains(this.containerEl.doc.activeElement);
@@ -3357,6 +3440,11 @@ export class MindmapView extends ItemView {
 
   /** Focuses a body line without an earlier pointerdown taking focus back. */
   private async editBodyLine(line: number): Promise<boolean> {
+    if (this.authority || this.acquiring) {
+      new Notice('Release map editing before editing Markdown body text.');
+
+      return false;
+    }
     const file = this.file;
     const opensNewPane = !!file && !findMarkdownView(this.app, file, this.leaf);
 
@@ -4104,6 +4192,13 @@ export class MindmapView extends ItemView {
     node: MindNode,
     change: Partial<Pick<TaskMetadata, 'priority' | 'dueDate'>>,
   ): Promise<void> {
+    if (!this.nodesBelongToRender([node])) {
+      this.reportOpError(
+        new Error('This task belongs to an older render. Select it again.'),
+      );
+
+      return;
+    }
     await this.applyOp((lines) => {
       const fresh = parseMarkdown(lines.join('\n'), this.file?.basename ?? '');
       const target = relocateTaskNode(fresh, node);
@@ -4329,7 +4424,7 @@ export class MindmapView extends ItemView {
     );
   }
 
-  /** Opens a node's note, creating its first body line when needed. */
+  /** Body text remains the Markdown editor's job, outside an owning session. */
   private async editNodeNote(node: MindNode): Promise<void> {
     const line = node.body[0]?.line;
 
@@ -4340,59 +4435,41 @@ export class MindmapView extends ItemView {
     }
   }
 
-  /** Creates a Markdown continuation line, then hands its writing to Obsidian. */
   private async addTaskNote(node: MindNode): Promise<void> {
-    if (!this.file) {
-      return;
-    }
-    const file = this.file;
-    let insertedLine: number | null = null;
-    let ownerLine: number | null = null;
-
-    try {
-      await this.writeFile(file, (lines) => {
-        const fresh = parseMarkdown(lines.join('\n'), file.basename);
-        const target = relocateNode(fresh, node);
-
-        if (!target) {
-          throw new Error(`Mindmap: "${node.text}" is no longer in the file`);
-        }
-        const result = addTaskNoteOp(lines, target);
-
-        insertedLine = result.insertedLine;
-        ownerLine = target.line;
-
-        return result.lines;
-      });
-    } catch (err) {
-      this.reportOpError(err);
-    }
-    if (insertedLine === null || ownerLine === null) {
-      await this.render();
-
-      return;
-    }
-    this.showBodyText = true;
-    this.pendingBodyLine = { path: file.path, ownerLine, line: insertedLine };
-    this.app.workspace.requestSaveLayout();
-    this.syncToggleActions();
-    await this.render();
-    if (await this.editBodyLine(insertedLine)) {
-      this.revealNodeAfterPaneChange(ownerLine, false);
-    }
+    await this.closeEdit?.();
+    new Notice(
+      `Add body text for "${node.text}" in Markdown after releasing map editing.`,
+    );
   }
 
   private async applyInsert(
     node: MindNode,
     mutate: (lines: string[], found: MindNode) => InsertResult,
   ): Promise<void> {
-    if (!this.file) {
+    const file = this.file;
+    const revision = this.structureRevision ?? 0;
+    const currentNode = this.nodesBelongToRender([node]);
+    const navigation = this.navigationSeq ?? 0;
+
+    if (!(await this.finishActiveDraft())) {
       return;
     }
-    const file = this.file;
+    if (!file || file !== this.file) {
+      return;
+    }
 
     try {
       await this.writeFile(file, (lines) => {
+        if (
+          !currentNode ||
+          (this.navigationSeq ?? 0) !== navigation ||
+          revision !== (this.structureRevision ?? 0) ||
+          revision !== (this.renderedStructureRevision ?? 0)
+        ) {
+          throw new Error(
+            'The insertion target belongs to an earlier generation. Select it again.',
+          );
+        }
         const fresh = parseMarkdown(lines.join('\n'), file.basename);
         const target = relocateNode(fresh, node);
 
@@ -4412,16 +4489,30 @@ export class MindmapView extends ItemView {
     await this.render();
   }
 
-  /**
-   * Runs an op against the file as it is now, on the node found again in it.
-   * The map's line numbers are from its last render, and a render is debounced
-   * behind an edit in the Markdown pane - so by the time a click reaches an op,
-   * the file may already be a few lines off.
-   */
+  // Relocation must not redirect a menu action from an obsolete projection.
+  private nodesBelongToRender(nodes: (MindNode | null)[]): boolean {
+    return (
+      this.renderedFile === this.file &&
+      nodes.every(
+        (node) =>
+          !node ||
+          node === this.root ||
+          this.laidByLine.get(node.line)?.node === node,
+      )
+    );
+  }
+
   private async applyToNodes(
     nodes: (MindNode | null)[],
     mutate: (lines: string[], found: MindNode[]) => string[],
   ): Promise<void> {
+    if (!this.nodesBelongToRender(nodes)) {
+      this.reportOpError(
+        new Error('A node belongs to an older render. Select it again.'),
+      );
+
+      return;
+    }
     await this.applyOp((lines) => {
       const fresh = parseMarkdown(lines.join('\n'), this.file?.basename ?? '');
       const found = nodes.map((n) => (n ? relocateNode(fresh, n) : null));
@@ -4435,58 +4526,285 @@ export class MindmapView extends ItemView {
     });
   }
 
-  /**
-   * Every write the map makes goes through here. One with no editor pane
-   * behind it has no history to step, so the map keeps that one step itself.
-   */
+  private async finishActiveDraft(): Promise<boolean> {
+    await this.closeEdit?.();
+    const draft = this.activeDraft;
+
+    if (draft && (draft.error || draft.applied < draft.revision)) {
+      new Notice(
+        'The latest draft was not acknowledged. Recover it before continuing structural edits or undo.',
+      );
+
+      return false;
+    }
+
+    return true;
+  }
+
+  private interruptAuthority(message: string): void {
+    if (!this.authority || this.authority.retired) {
+      return;
+    }
+    this.authority.retire();
+    if (this.activeDraft) {
+      this.activeDraft.error = message;
+    }
+    new Notice(message);
+  }
+
+  private checkAuthority(): void {
+    const source = this.authority;
+
+    if (!source || source.retired) {
+      return;
+    }
+    try {
+      source.validate();
+    } catch (error) {
+      if (this.activeDraft) {
+        this.activeDraft.error = String(error);
+      }
+      new Notice(
+        'Exclusive editing was interrupted. Recover drafts, then release and acquire again.',
+      );
+    }
+  }
+
+  /** Source acknowledgement leaves the queue before rendering can reenter it. */
+  private enqueueWrite<T>(operation: () => Promise<T>): Promise<T> {
+    const result = (this.sourceQueue ?? Promise.resolve()).then(operation);
+
+    this.sourceQueue = result.then(
+      () => undefined,
+      () => undefined,
+    );
+
+    return result;
+  }
+
+  private async requireAuthority(file: TFile): Promise<SourceAuthority> {
+    if (
+      this.closed ||
+      this.file !== file ||
+      this.plugin.isMobile ||
+      this.composing
+    ) {
+      throw new Error(
+        'This map/file session cannot acquire desktop editing authority.',
+      );
+    }
+    if (this.authority) {
+      this.authority.validate();
+
+      return this.authority;
+    }
+    const pending =
+      this.acquiring ?? SourceAuthority.acquire(this.app, file, this.leaf);
+
+    this.acquiring = pending;
+    try {
+      const source = await pending;
+
+      if (this.closed || this.file !== file) {
+        source.retire();
+        throw new Error(
+          'The map changed files during acquisition. Recover the handover draft.',
+        );
+      }
+      this.authority = source;
+      this.plugin.register(() => source.retire());
+      this.authorityNeedsRender =
+        source.baseline.replace(/\r\n/g, '\n') !==
+        this.renderedSource.replace(/\r\n/g, '\n');
+
+      return source;
+    } finally {
+      if (this.acquiring === pending) {
+        this.acquiring = null;
+      }
+    }
+  }
+
+  private async releaseAuthority(): Promise<void> {
+    await this.closeEdit?.();
+    await this.sourceQueue;
+    await this.acquiring?.catch(() => undefined);
+    this.authority?.retire();
+    this.authority = null;
+    this.undoable = null;
+    this.closeEdit = null;
+    this.activeDraft = null;
+    try {
+      await this.render();
+    } catch (error) {
+      this.reportOpError(error);
+    }
+    new Notice(
+      'Map editing released. Open raw source to edit Markdown or acquire again. Unsaved drafts remain in recover map drafts.',
+    );
+  }
+
   private async writeFile(
     file: TFile,
     mutate: (lines: string[]) => string[],
+    acknowledge?: () => void,
   ): Promise<void> {
-    const near = this.editor.linkedLeaf() ?? this.leaf;
-    const wrote = await updateFileLines(this.app, file, mutate, near);
+    const requestedStructure = this.structureRevision ?? 0;
+    const navigation = this.navigationSeq ?? 0;
 
-    this.undoable = wrote ? { path: file.path, ...wrote } : null;
+    await this.enqueueWrite(async () => {
+      if (
+        (this.navigationSeq ?? 0) !== navigation ||
+        this.file !== file ||
+        this.closed
+      ) {
+        throw new Error('The queued file/session is no longer current.');
+      }
+      const source = await this.requireAuthority(file);
+
+      if (this.authorityNeedsRender) {
+        throw new Error(
+          'The source was handed over. Refresh the map and select its current target before writing.',
+        );
+      }
+
+      if (
+        !acknowledge &&
+        requestedStructure !== (this.structureRevision ?? 0)
+      ) {
+        throw new Error(
+          'Another structural operation completed first. Select the refreshed target and retry.',
+        );
+      }
+      let before = source.baseline;
+      const after = await this.app.vault.process(file, (current) => {
+        source.validate();
+        if (
+          this.authority !== source ||
+          this.file !== file ||
+          (this.navigationSeq ?? 0) !== navigation ||
+          current !== source.baseline
+        ) {
+          throw new Error(
+            'The source baseline or map owner changed. The operation was refused.',
+          );
+        }
+        before = current;
+        const lines = current.split(/\r?\n/);
+
+        requireStructuralContext(lines);
+        const result = mutate(lines);
+
+        requireStructuralContext(result);
+
+        return joinLike(result, current);
+      });
+
+      source.baseline = after;
+      source.validate();
+      if (
+        this.authority !== source ||
+        this.file !== file ||
+        this.closed ||
+        (this.navigationSeq ?? 0) !== navigation
+      ) {
+        throw new Error(
+          'The write committed to its original file, but its map session has closed. Recover the draft before retrying.',
+        );
+      }
+      if (before !== after) {
+        this.undoable = Object.freeze({
+          path: file.path,
+          before,
+          after,
+          owner: source,
+        });
+        if (!acknowledge) {
+          this.structureRevision = requestedStructure + 1;
+        }
+      }
+      acknowledge?.();
+      source.show();
+    });
   }
 
-  /**
-   * Puts back the last write the map made straight to the file, which happens
-   * when the note is only open in a reading pane - Obsidian keeps no history
-   * for those, and a delete from the map would otherwise be final.
-   *
-   * Only while the file still says what that write left, so it can never undo
-   * over something changed since, and only once: what was put back is what the
-   * map now shows, and the step is spent.
-   */
+  /** One-step session Undo; the comparison and replacement share a process callback. */
   private undoLastWrite(): boolean {
-    const kept = this.undoable;
     const file = this.file;
+    const navigation = this.navigationSeq ?? 0;
 
-    if (!kept || !file || file.path !== kept.path) {
+    if (!file || (!this.undoable && !this.closeEdit && !this.authority)) {
       return false;
     }
     void (async () => {
-      if ((await this.app.vault.read(file)) !== kept.after) {
-        new Notice('Mind map: the file has changed since, so it was left be.');
-        this.undoable = null;
-
+      if (!(await this.finishActiveDraft())) {
         return;
       }
-      await this.app.vault.modify(file, kept.before);
-      this.undoable = null;
-      new Notice('Mind map: undid the last change.');
+      await this.enqueueWrite(async () => {
+        if ((this.navigationSeq ?? 0) !== navigation) {
+          throw new Error('Undo belongs to an earlier file session.');
+        }
+        const kept = this.undoable;
+
+        if (!kept || file !== this.file || file.path !== kept.path) {
+          return;
+        }
+        const source = await this.requireAuthority(file);
+
+        if (kept.owner && kept.owner !== source) {
+          throw new Error('Undo belongs to another map session.');
+        }
+        const after = await this.app.vault.process(file, (current) => {
+          source.validate();
+          if (this.undoable !== kept || current !== kept.after) {
+            throw new Error(
+              'Undo refused: the current file no longer matches this exact Undo record.',
+            );
+          }
+
+          return kept.before;
+        });
+
+        source.baseline = after;
+        this.structureRevision = (this.structureRevision ?? 0) + 1;
+        if (this.undoable === kept) {
+          this.undoable = null;
+        }
+        source.show?.();
+        new Notice('Mind map: undid the last change.');
+      });
       await this.render();
-    })();
+    })().catch((error: unknown) => this.reportOpError(error));
 
     return true;
   }
 
   private async applyOp(mutate: (lines: string[]) => string[]): Promise<void> {
-    if (!this.file) {
+    const file = this.file;
+    const revision = this.structureRevision ?? 0;
+    const navigation = this.navigationSeq ?? 0;
+
+    if (!(await this.finishActiveDraft())) {
+      return;
+    }
+    if (!file || file !== this.file) {
       return;
     }
     try {
-      await this.writeFile(this.file, mutate);
+      await this.writeFile(file, (lines) => {
+        if (
+          this.renderedFile !== file ||
+          (this.navigationSeq ?? 0) !== navigation ||
+          revision !== (this.structureRevision ?? 0) ||
+          revision !== (this.renderedStructureRevision ?? 0)
+        ) {
+          throw new Error(
+            'The target belongs to an earlier structural generation. Select it again.',
+          );
+        }
+
+        return mutate(lines);
+      });
     } catch (err) {
       this.reportOpError(err);
     }
@@ -4497,13 +4815,36 @@ export class MindmapView extends ItemView {
 
   private reportOpError(err: unknown): void {
     console.error('Mindmap: failed to update the file', err);
+    if (this.activeDraft) {
+      this.activeDraft.error = String(err);
+    }
     new Notice(
-      'Mind map: the file changed while editing; the map was refreshed. Please retry.',
+      `Mind map refused the operation: ${String(err)}. Use Recover map drafts for retained input.`,
+      12000,
     );
   }
 
   private startInlineEdit(node: MindNode, el: HTMLElement): void {
     if (this.isBusy() || !this.file) {
+      return;
+    }
+    if (
+      this.renderedFile !== this.file ||
+      this.authorityNeedsRender ||
+      (this.renderedStructureRevision ?? 0) !== (this.structureRevision ?? 0)
+    ) {
+      void this.render();
+      new Notice(
+        'Wait for the structural edit to redraw, then select the node again.',
+      );
+
+      return;
+    }
+    if (!this.authority) {
+      void this.requireAuthority(this.file)
+        .then(() => this.startInlineEdit(node, el))
+        .catch((error: unknown) => this.reportOpError(error));
+
       return;
     }
     // The note's own pill says the file's name, which is no line in it: there
@@ -4522,7 +4863,11 @@ export class MindmapView extends ItemView {
     const laid = this.laidByLine.get(node.line);
 
     if (laid) {
-      node = laid.node;
+      if (laid.node !== node) {
+        new Notice('This node belongs to an older render. Select it again.');
+
+        return;
+      }
       el = laid.el;
     }
     if (!el.isConnected) {
@@ -4542,7 +4887,20 @@ export class MindmapView extends ItemView {
 
     let label = node.text;
     const displayed = node.taskMetadata?.title ?? node.text;
+    const owner = this.authority;
+    const structure = this.structureRevision ?? 0;
+    let interrupted = false;
+    let writeRequest = 0;
+    const draft: RecoveryDraft = {
+      path: file.path,
+      target: `Line ${node.line + 1}`,
+      text: displayed,
+      revision: 0,
+      applied: 0,
+    };
 
+    recoveryDrafts(this.app).push(draft);
+    this.activeDraft = draft;
     input.textContent = displayed;
     // Exactly the label's place, so the node's contents do not shift.
     textEl.after(input);
@@ -4550,40 +4908,101 @@ export class MindmapView extends ItemView {
     this.closeEdit = runEditor({
       ...this.editSession(),
       input,
-      value: () => singleLineValue(input.innerText),
+      value: () => singleLineValue(draft.text),
       placeCaret: () => caretAtEnd(input),
       restore: () => {
         this.closeEdit = null;
         input.remove();
         textEl.show();
       },
-      // What the file says this node is called, kept up as it is typed: the
-      // next write has to find the node by the name the last one gave it.
-      write: (value) => {
-        if (value === label || !value) {
+      interrupted: () => {
+        interrupted = true;
+        draft.error =
+          'Editing was interrupted during IME composition or DOM disposal. The exact unacknowledged input was retained.';
+        new Notice(
+          'Composition/draft interrupted. Use recover map drafts; no intermediate composition text was saved.',
+        );
+      },
+      capture: (reason) => {
+        // Lifecycle layout can empty innerText without an input event.
+        if (reason === 'finish' || !input.isConnected) {
           return;
         }
-        const named = { ...node, text: label };
+        const raw = input.innerText;
 
-        void this.writeEdit(file, (lines, fresh) => {
-          const target = relocateNode(fresh, named);
+        if (raw !== draft.text) {
+          draft.text = raw;
+          draft.revision++;
+        }
+      },
+      // Capture immutable value/revision now; resolve the target only at dispatch.
+      write: async (value) => {
+        const revision = draft.revision;
+        const request = ++writeRequest;
+        let nextLabel = label;
+        let nextMetadata = node.taskMetadata;
+        const ok = await this.writeEdit(
+          file,
+          (lines, fresh) => {
+            if (
+              this.file !== file ||
+              this.authority !== owner ||
+              (this.structureRevision ?? 0) !== structure ||
+              this.closed
+            ) {
+              throw new Error('The label file/session is no longer current.');
+            }
+            const target = relocateNode(fresh, { ...node, text: label });
 
-          if (!target) {
-            throw new Error(`Mindmap: "${label}" is no longer in the file`);
-          }
+            if (!target) {
+              throw new Error(`Mindmap: "${label}" is no longer in the file`);
+            }
 
-          return setTextOp(lines, target, value);
-        }).then((ok) => {
-          if (ok) {
-            label = formatTaskMetadata(
-              value,
-              node.taskMetadata ?? {
-                priority: null,
-                dueDate: null,
-              },
+            const result = setTextOp(lines, target, value);
+            const renamed = findByLine(
+              parseMarkdown(result.join('\n'), file.basename),
+              target.line,
             );
+
+            if (
+              !renamed ||
+              renamed.type !== target.type ||
+              renamed.checked !== target.checked ||
+              (target.checked !== null && renamed.taskMetadata?.title !== value)
+            ) {
+              throw new Error(
+                'Use the task actions to change node kind or metadata; the exact title draft was retained.',
+              );
+            }
+            nextLabel = renamed.text;
+            nextMetadata = renamed.taskMetadata;
+
+            return result;
+          },
+          () => {
+            label = nextLabel;
+            node.text = nextLabel;
+            node.taskMetadata = nextMetadata;
+            draft.applied = Math.max(draft.applied, revision);
+            if (
+              !interrupted &&
+              request === writeRequest &&
+              revision === draft.revision
+            ) {
+              delete draft.error;
+            }
+          },
+        );
+
+        if (!ok) {
+          const message =
+            'The source write was refused. This exact draft has not been acknowledged.';
+
+          if (!interrupted && request === writeRequest) {
+            draft.error = message;
           }
-        });
+          throw new Error(message);
+        }
       },
     });
   }
@@ -4593,23 +5012,33 @@ export class MindmapView extends ItemView {
    * the map's line numbers are from when it opened and the file may have moved
    * on - every `mutate` is handed a fresh parse to aim itself at. False when
    * the file no longer has what the edit was made against, which is a conflict
-   * rather than a mistake: the text goes to the clipboard and the map catches
-   * up with the file.
+   * rather than a mistake: the unacknowledged text stays in recovery memory.
    */
   private async writeEdit(
     file: TFile,
     mutate: (lines: string[], fresh: MindNode) => string[],
+    acknowledge: () => void,
   ): Promise<boolean> {
     try {
-      await this.writeFile(file, (lines) =>
-        mutate(lines, parseMarkdown(lines.join('\n'), file.basename)),
+      await this.writeFile(
+        file,
+        (lines) =>
+          mutate(lines, parseMarkdown(lines.join('\n'), file.basename)),
+        acknowledge,
       );
     } catch (err) {
-      console.error('Mindmap: failed to write the edit', err);
+      this.reportOpError(err);
 
       return false;
     }
-    await this.render();
+    try {
+      await this.render();
+    } catch (err) {
+      console.error('Mindmap: saved, but could not redraw', err);
+      new Notice(
+        'The edit was saved, but the map could not redraw. Refresh it; do not repeat the write.',
+      );
+    }
 
     return true;
   }
